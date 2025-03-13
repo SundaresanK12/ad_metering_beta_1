@@ -45,7 +45,8 @@ import {
   TestTube,
   Link2,
   CheckCircle2,
-  XCircle 
+  XCircle,
+  User 
 } from 'lucide-react';
 
 // Mock data for experiments
