@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BarChart } from 'lucide-react';
+import { BarChart, Flag, TestTube, User } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -14,11 +14,29 @@ const Index = () => {
             Analyze telecommunications advertising data and market trends
           </p>
           
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
             <Link to="/brands-analytics">
               <Button className="flex items-center gap-2">
                 <BarChart className="h-4 w-4" />
                 View Telecom Ads Analytics
+              </Button>
+            </Link>
+            <Link to="/campaigns">
+              <Button className="flex items-center gap-2">
+                <Flag className="h-4 w-4" />
+                Manage Campaigns
+              </Button>
+            </Link>
+            <Link to="/experiments">
+              <Button className="flex items-center gap-2">
+                <TestTube className="h-4 w-4" />
+                A/B Test Experiments
+              </Button>
+            </Link>
+            <Link to="/profiles">
+              <Button className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Customer Profiles
               </Button>
             </Link>
           </div>
