@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PdfUploader from '@/components/PdfUploader';
 import PdfViewer from '@/components/PdfViewer';
 import MongoDbForm from '@/components/MongoDbForm';
 import ExtractedData from '@/components/ExtractedData';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ArrowRight, Database, FileText } from 'lucide-react';
+import { ArrowRight, Database, FileText, BarChart } from 'lucide-react';
 import usePdfExtractor from '@/hooks/usePdfExtractor';
 import mongoService from '@/services/mongoService';
 import { toast } from 'sonner';
@@ -100,6 +101,15 @@ const Index = () => {
           <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
             Extract text from PDF documents and store it in MongoDB with minimal effort
           </p>
+          
+          <div className="mt-6 flex justify-center">
+            <Link to="/brands-analytics">
+              <Button variant="outline" className="flex items-center gap-2">
+                <BarChart className="h-4 w-4" />
+                View Telecom Ads Analytics
+              </Button>
+            </Link>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
