@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PdfUploader from '@/components/PdfUploader';
 import PdfViewer from '@/components/PdfViewer';
@@ -8,48 +8,30 @@ import ExtractedData from '@/components/ExtractedData';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Database, FileText, BarChart } from 'lucide-react';
-import usePdfExtractor from '@/hooks/usePdfExtractor';
 import mongoService from '@/services/mongoService';
 import { toast } from 'sonner';
 
 const Index = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const { extractTextFromPdf, extractedText, isProcessing } = usePdfExtractor();
   const [isConnected, setIsConnected] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedToDb, setSavedToDb] = useState(false);
   const [extractedData, setExtractedData] = useState<{
     _id?: string;
     filename: string;
-    content: string;
     timestamp: Date;
     fileSize: number;
   } | null>(null);
 
-  useEffect(() => {
-    // Check if already connected to MongoDB on component mount
-    setIsConnected(mongoService.isDbConnected());
-  }, []);
-
-  const handleFileSelect = async (file: File) => {
+  const handleFileSelect = (file: File) => {
     setPdfFile(file);
     setSavedToDb(false);
     
-    try {
-      const text = await extractTextFromPdf(file);
-      
-      if (text) {
-        setExtractedData({
-          filename: file.name,
-          content: text,
-          timestamp: new Date(),
-          fileSize: file.size
-        });
-      }
-    } catch (error) {
-      console.error('Error extracting text:', error);
-      toast.error('Failed to extract text from PDF');
-    }
+    setExtractedData({
+      filename: file.name,
+      timestamp: new Date(),
+      fileSize: file.size
+    });
   };
 
   const handleConnectionSuccess = async (connectionString: string, database: string, collection: string) => {
@@ -71,7 +53,10 @@ const Index = () => {
     setIsSaving(true);
     
     try {
-      const result = await mongoService.savePdfData(extractedData);
+      const result = await mongoService.savePdfData({
+        ...extractedData,
+        content: "PDF data placeholder" // Simplified without extraction
+      });
       
       if (result && result._id) {
         setExtractedData({
@@ -99,7 +84,7 @@ const Index = () => {
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-primary">PDF Mongo Muncher</h1>
           <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Extract text from PDF documents and store it in MongoDB with minimal effort
+            Upload PDF documents and store them in MongoDB with minimal effort
           </p>
           
           <div className="mt-6 flex justify-center">
@@ -119,7 +104,7 @@ const Index = () => {
                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium mr-2">1</div>
                 <h2 className="text-lg font-medium">Upload PDF</h2>
               </div>
-              <PdfUploader onFileSelect={handleFileSelect} isProcessing={isProcessing} />
+              <PdfUploader onFileSelect={handleFileSelect} />
             </div>
             
             <div className="space-y-3">
@@ -136,19 +121,20 @@ const Index = () => {
               />
             </div>
             
-            <ExtractedData data={extractedData} savedToDb={savedToDb} />
+            <ExtractedData data={
+              extractedData ? {
+                ...extractedData,
+                content: "PDF data placeholder" // Simplified without extraction
+              } : null
+            } savedToDb={savedToDb} />
           </div>
 
           <div className="space-y-3 animate-fade-in delay-100">
             <div className="flex items-center">
               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium mr-2">3</div>
-              <h2 className="text-lg font-medium">Preview & Process</h2>
+              <h2 className="text-lg font-medium">Preview</h2>
             </div>
-            <PdfViewer 
-              pdfFile={pdfFile} 
-              extractedText={extractedText}
-              isProcessing={isProcessing}
-            />
+            <PdfViewer pdfFile={pdfFile} />
           </div>
         </div>
 
@@ -156,7 +142,7 @@ const Index = () => {
         
         <footer className="text-center text-sm text-muted-foreground animate-fade-in delay-200">
           <p>
-            PDF Mongo Muncher | Easily extract and store PDF data in MongoDB
+            PDF Mongo Muncher | Easily store PDF data in MongoDB
           </p>
           <p className="mt-1">
             <a href="https://github.com/your-repo" className="text-primary hover:underline transition-colors">

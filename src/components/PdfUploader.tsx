@@ -8,10 +8,9 @@ import { FileText, Upload, X } from 'lucide-react';
 
 interface PdfUploaderProps {
   onFileSelect: (file: File) => void;
-  isProcessing: boolean;
 }
 
-const PdfUploader: React.FC<PdfUploaderProps> = ({ onFileSelect, isProcessing }) => {
+const PdfUploader: React.FC<PdfUploaderProps> = ({ onFileSelect }) => {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,17 +103,15 @@ const PdfUploader: React.FC<PdfUploaderProps> = ({ onFileSelect, isProcessing })
               </div>
             </div>
             <div className="flex space-x-2">
-              {!isProcessing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearSelection}
-                  className="group"
-                >
-                  <X className="mr-1 h-4 w-4 group-hover:rotate-90 transition-transform" />
-                  Clear
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearSelection}
+                className="group"
+              >
+                <X className="mr-1 h-4 w-4 group-hover:rotate-90 transition-transform" />
+                Clear
+              </Button>
             </div>
           </div>
         ) : (
