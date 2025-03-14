@@ -1,8 +1,9 @@
-
 import { toast } from 'sonner';
 
+const API_BASE_URL = 'http://localhost:5000/api';
+
 class ApiService {
-  private baseUrl: string = import.meta.env.VITE_API_URL || '/api';
+  private baseUrl: string = API_BASE_URL;
 
   protected async get<T>(endpoint: string): Promise<T | null> {
     try {
