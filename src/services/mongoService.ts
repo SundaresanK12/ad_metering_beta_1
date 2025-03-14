@@ -1,5 +1,6 @@
 
 import { toast } from 'sonner';
+import ApiService from './apiService';
 
 interface PdfData {
   filename: string;
@@ -14,9 +15,8 @@ interface MongoConnection {
   collection: string;
 }
 
-// This is a mock implementation for the frontend demo
-// In a real application, these operations would be performed on a backend server
-class MongoService {
+// This service extends the base ApiService
+class MongoService extends ApiService {
   private connection: MongoConnection | null = null;
   private isConnected: boolean = false;
   
@@ -25,7 +25,13 @@ class MongoService {
       // Simulate connection delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // In a real app, we would connect to MongoDB here
+      // In a real app with our API layer, we would make an API call like:
+      // const result = await this.post<MongoConnection, {success: boolean}>('/mongo/connect', {
+      //   connectionString,
+      //   database,
+      //   collection
+      // });
+      
       // For the demo, we'll just store the connection details
       this.connection = {
         connectionString,
@@ -55,10 +61,13 @@ class MongoService {
     }
     
     try {
+      // In a real app with our API layer, we would make an API call like:
+      // const result = await this.post<PdfData, {_id: string}>('/mongo/pdf-data', data);
+      // return result;
+      
       // Simulate saving delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // In a real app, we would insert the document into MongoDB
       // For the demo, we'll simulate a successful save
       const mockId = 'mongo_' + Math.random().toString(36).substring(2, 15);
       
