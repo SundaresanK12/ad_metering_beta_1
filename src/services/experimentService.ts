@@ -30,8 +30,8 @@ class ExperimentService extends ApiService {
   async getExperiments(): Promise<Experiment[]> {
     const data = await this.get<Experiment[]>('/experiments');
     
-    // For demo, return mock data
-    return mockExperiments;
+    // For demo, return mock data with type conversion to remove readonly
+    return JSON.parse(JSON.stringify(mockExperiments)) as Experiment[];
   }
   
   async getExperiment(id: string): Promise<Experiment | null> {
@@ -39,7 +39,10 @@ class ExperimentService extends ApiService {
     
     // For demo, return mock data
     const experiment = mockExperiments.find(e => e.id === id);
-    return experiment || null;
+    if (!experiment) return null;
+    
+    // Convert readonly arrays to mutable
+    return JSON.parse(JSON.stringify(experiment)) as Experiment;
   }
   
   async createExperiment(experiment: Omit<Experiment, 'id'>): Promise<Experiment | null> {
@@ -62,7 +65,10 @@ class ExperimentService extends ApiService {
     const existingExperiment = mockExperiments.find(e => e.id === id);
     if (!existingExperiment) return null;
     
-    const updatedExperiment = { ...existingExperiment, ...experiment };
+    // Convert from readonly to mutable
+    const baseExperiment = JSON.parse(JSON.stringify(existingExperiment)) as Experiment;
+    const updatedExperiment = { ...baseExperiment, ...experiment };
+    
     toast.success('Experiment updated successfully');
     return updatedExperiment;
   }

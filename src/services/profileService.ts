@@ -26,8 +26,8 @@ class ProfileService extends ApiService {
   async getProfiles(): Promise<CustomerProfile[]> {
     const data = await this.get<CustomerProfile[]>('/profiles');
     
-    // For demo, return mock data
-    return mockProfiles;
+    // For demo, return mock data with type conversion to remove readonly
+    return JSON.parse(JSON.stringify(mockProfiles)) as CustomerProfile[];
   }
   
   async getProfile(id: string): Promise<CustomerProfile | null> {
@@ -35,7 +35,10 @@ class ProfileService extends ApiService {
     
     // For demo, return mock data
     const profile = mockProfiles.find(p => p.id === id);
-    return profile || null;
+    if (!profile) return null;
+    
+    // Convert readonly arrays to mutable
+    return JSON.parse(JSON.stringify(profile)) as CustomerProfile;
   }
   
   async createProfile(profile: Omit<CustomerProfile, 'id'>): Promise<CustomerProfile | null> {
@@ -58,7 +61,10 @@ class ProfileService extends ApiService {
     const existingProfile = mockProfiles.find(p => p.id === id);
     if (!existingProfile) return null;
     
-    const updatedProfile = { ...existingProfile, ...profile };
+    // Convert from readonly to mutable
+    const baseProfile = JSON.parse(JSON.stringify(existingProfile)) as CustomerProfile;
+    const updatedProfile = { ...baseProfile, ...profile };
+    
     toast.success('Profile updated successfully');
     return updatedProfile;
   }

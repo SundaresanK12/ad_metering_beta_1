@@ -1,6 +1,7 @@
 
 import ApiService from './apiService';
 import { mockCampaigns } from '../data/mockData';
+import { toast } from 'sonner';
 
 export interface Campaign {
   id: string;
@@ -23,8 +24,8 @@ class CampaignService extends ApiService {
   async getCampaigns(): Promise<Campaign[]> {
     const data = await this.get<Campaign[]>('/campaigns');
     
-    // For demo, return mock data
-    return mockCampaigns;
+    // For demo, return mock data with type conversion to remove readonly
+    return JSON.parse(JSON.stringify(mockCampaigns)) as Campaign[];
   }
   
   async getCampaign(id: string): Promise<Campaign | null> {
@@ -32,7 +33,10 @@ class CampaignService extends ApiService {
     
     // For demo, return mock data
     const campaign = mockCampaigns.find(c => c.id === id);
-    return campaign || null;
+    if (!campaign) return null;
+    
+    // Convert readonly arrays to mutable
+    return JSON.parse(JSON.stringify(campaign)) as Campaign;
   }
   
   async createCampaign(campaign: Omit<Campaign, 'id'>): Promise<Campaign | null> {
@@ -55,7 +59,10 @@ class CampaignService extends ApiService {
     const existingCampaign = mockCampaigns.find(c => c.id === id);
     if (!existingCampaign) return null;
     
-    const updatedCampaign = { ...existingCampaign, ...campaign };
+    // Convert from readonly to mutable
+    const baseCampaign = JSON.parse(JSON.stringify(existingCampaign)) as Campaign;
+    const updatedCampaign = { ...baseCampaign, ...campaign };
+    
     toast.success('Campaign updated successfully');
     return updatedCampaign;
   }
