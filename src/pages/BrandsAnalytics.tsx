@@ -26,14 +26,14 @@ export default function BrandsAnalytics() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <MainNavigation />
-      
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">US Telecom Ads Analysis</h1>
         <p className="text-muted-foreground">
           Analyze brands based on target URLs and ad campaigns
         </p>
       </div>
+      
+      <MainNavigation />
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="flex items-center gap-2">
