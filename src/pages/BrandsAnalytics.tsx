@@ -15,6 +15,7 @@ import MarketShareChart from '@/components/MarketShareChart';
 import SpendingTrendsChart from '@/components/SpendingTrendsChart';
 import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
 import NewOffersTable from '@/components/NewOffersTable';
+import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
 
 export default function BrandsAnalytics() {
@@ -25,6 +26,8 @@ export default function BrandsAnalytics() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <MainNavigation />
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">US Telecom Ads Analysis</h1>
         <p className="text-muted-foreground">
