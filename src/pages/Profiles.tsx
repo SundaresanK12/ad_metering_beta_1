@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { 
   Card, 
   CardContent, 
@@ -30,13 +28,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { 
-  ArrowLeft, 
   Edit, 
+  Plus, 
   Search, 
   Trash, 
-  Plus, 
   User
 } from 'lucide-react';
+import MainNavigation from '@/components/MainNavigation';
 
 // Mock data for profiles
 const initialProfiles = [
@@ -113,12 +111,9 @@ const Profiles = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <MainNavigation />
+      
       <div className="flex items-center mb-6">
-        <Link to="/" className="mr-4">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
         <h1 className="text-3xl font-bold">Customer Profiles</h1>
       </div>
 
