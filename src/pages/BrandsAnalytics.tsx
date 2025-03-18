@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,12 +17,43 @@ import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
 import NewOffersTable from '@/components/NewOffersTable';
 import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
+import brandService, { BrandData } from '@/services/brandService';
 
 export default function BrandsAnalytics() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date('2023-09-01'));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date('2023-12-31'));
   const [hashKey, setHashKey] = useState<string>('');
   const [activeTab, setActiveTab] = useState('overview');
+  const [brands, setBrands] = useState<BrandData[]>([]);
+  const [filteredBrands, setFilteredBrands] = useState<BrandData[]>([]);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      const fetchedBrands = await brandService.getBrands();
+      setBrands(fetchedBrands || []);
+      setFilteredBrands(fetchedBrands || []);
+    };
+    
+    fetchBrands();
+  }, []);
+
+  const handleSearch = () => {
+    if (!hashKey.trim()) {
+      setFilteredBrands(brands);
+      return;
+    }
+
+    const searchTerm = hashKey.trim().toLowerCase();
+    const filtered = brands.filter(brand => {
+      return (
+        brand.brand.toLowerCase().includes(searchTerm) ||
+        brand.targetUrl.toLowerCase().includes(searchTerm) ||
+        brand.hashKeys.some(key => key.toLowerCase().includes(searchTerm))
+      );
+    });
+    
+    setFilteredBrands(filtered);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -81,12 +112,12 @@ export default function BrandsAnalytics() {
             onChange={(e) => setHashKey(e.target.value)}
             className="max-w-xs"
           />
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleSearch}>
             <Search className="h-4 w-4" />
           </Button>
         </div>
 
-        <Button>Apply Filters</Button>
+        <Button onClick={handleSearch}>Apply Filters</Button>
       </div>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="mb-8">
@@ -185,7 +216,7 @@ export default function BrandsAnalytics() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <BrandsList />
+              <BrandsList brands={filteredBrands} />
             </CardContent>
           </Card>
         </TabsContent>

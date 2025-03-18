@@ -3,6 +3,11 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Link } from 'lucide-react';
+import { BrandData } from '@/services/brandService';
+
+interface BrandsListProps {
+  brands?: BrandData[];
+}
 
 const mockData = [
   {
@@ -77,7 +82,9 @@ const mockData = [
   },
 ];
 
-const BrandsList = () => {
+const BrandsList: React.FC<BrandsListProps> = ({ brands }) => {
+  const brandsToDisplay = brands && brands.length > 0 ? brands : mockData;
+
   return (
     <div>
       <Table>
@@ -93,7 +100,7 @@ const BrandsList = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {mockData.map((item) => (
+          {brandsToDisplay.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="font-medium">{item.brand}</TableCell>
               <TableCell className="max-w-[200px] truncate">
