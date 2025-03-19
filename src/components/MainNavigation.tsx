@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { BarChart, Flag, TestTube, User } from 'lucide-react';
+import { BarChart, Flag, User } from 'lucide-react';
 
 const navItems = [
   {
@@ -14,11 +14,6 @@ const navItems = [
     title: 'Campaigns',
     href: '/campaigns',
     icon: Flag,
-  },
-  {
-    title: 'Experiments',
-    href: '/experiments',
-    icon: TestTube,
   },
   {
     title: 'Profiles',

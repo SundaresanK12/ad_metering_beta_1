@@ -1,4 +1,3 @@
-
 // Brand Analytics Mock Data
 export const mockBrands = [
   {
@@ -6,7 +5,7 @@ export const mockBrands = [
     brand: "Verizon",
     targetUrl: "verizon.com/5g",
     adCount: 523,
-    impressions: "14.2M",
+    impressions: "14.2K",
     spend: "$24.5M",
     performance: 9.2,
     hashKeys: ["#5G", "#Unlimited", "#iPhonePromo"]
@@ -16,7 +15,7 @@ export const mockBrands = [
     brand: "AT&T",
     targetUrl: "att.com/deals",
     adCount: 487,
-    impressions: "12.8M",
+    impressions: "12.8K",
     spend: "$21.3M",
     performance: 8.7,
     hashKeys: ["#Fiber", "#5G", "#Streaming"]
@@ -26,7 +25,7 @@ export const mockBrands = [
     brand: "T-Mobile",
     targetUrl: "t-mobile.com/switch",
     adCount: 512,
-    impressions: "13.5M",
+    impressions: "13.5K",
     spend: "$22.8M",
     performance: 9.0,
     hashKeys: ["#Uncarrier", "#5G", "#FamilyPlans"]
@@ -36,7 +35,7 @@ export const mockBrands = [
     brand: "Xfinity",
     targetUrl: "xfinity.com/mobile",
     adCount: 342,
-    impressions: "8.7M",
+    impressions: "8.7K",
     spend: "$16.2M",
     performance: 7.8,
     hashKeys: ["#BundleSavings", "#Mobile", "#Internet"]
@@ -46,7 +45,7 @@ export const mockBrands = [
     brand: "Spectrum",
     targetUrl: "spectrum.com/offers",
     adCount: 298,
-    impressions: "7.5M",
+    impressions: "7.5K",
     spend: "$14.1M",
     performance: 7.5,
     hashKeys: ["#Internet", "#TV", "#NoCaps"]

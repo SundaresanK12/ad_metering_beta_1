@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -5,15 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Search, Tag, TrendingUp, TrendingDown, BarChart, PieChart, FileText, Link, DollarSign } from 'lucide-react';
+import { CalendarIcon, Search, Tag, BarChart, PieChart, FileText, DollarSign } from 'lucide-react';
 import BrandsList from '@/components/BrandsList';
 import BrandStatsCard from '@/components/BrandStatsCard';
 import MarketShareChart from '@/components/MarketShareChart';
 import SpendingTrendsChart from '@/components/SpendingTrendsChart';
 import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
-import NewOffersTable from '@/components/NewOffersTable';
 import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
 import brandService, { BrandData } from '@/services/brandService';
@@ -120,11 +119,10 @@ export default function BrandsAnalytics() {
       </div>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid w-full grid-cols-4 mb-4">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="brands">Brands</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="offers">New Offers</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -218,7 +216,7 @@ export default function BrandsAnalytics() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
+                  <DollarSign className="h-5 w-5" />
                   Revenue vs. Ad Spend Performance
                 </CardTitle>
                 <CardDescription>
@@ -230,23 +228,6 @@ export default function BrandsAnalytics() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="offers">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                New Promotional Offers
-              </CardTitle>
-              <CardDescription>
-                Tracking new offers by brand
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <NewOffersTable />
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>

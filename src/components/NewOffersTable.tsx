@@ -12,7 +12,7 @@ const mockOffers = [
     endDate: '2023-12-31',
     discount: '$15/month',
     targetAudience: 'New customers',
-    impressions: '5.2M',
+    impressions: '5.2K',
     hashKey: 'vz-unlimited-q4'
   },
   {
@@ -23,7 +23,7 @@ const mockOffers = [
     endDate: '2023-12-15',
     discount: '$300 gift card',
     targetAudience: 'New & existing customers',
-    impressions: '4.8M',
+    impressions: '4.8K',
     hashKey: 'att-fiber-bundle'
   },
   {
@@ -34,7 +34,7 @@ const mockOffers = [
     endDate: '2024-01-15',
     discount: '$200 off + free Netflix',
     targetAudience: 'New home internet customers',
-    impressions: '3.9M',
+    impressions: '3.9K',
     hashKey: 'tmobile-home-netflix'
   },
   {
@@ -45,7 +45,7 @@ const mockOffers = [
     endDate: '2024-01-10',
     discount: '$500 off when you bring your device',
     targetAudience: 'Competitors\' customers',
-    impressions: '2.7M',
+    impressions: '2.7K',
     hashKey: 'xfinity-byod-500'
   },
   {
@@ -56,7 +56,7 @@ const mockOffers = [
     endDate: '2024-01-31',
     discount: '$25/line for 4+ lines',
     targetAudience: 'Families',
-    impressions: '2.1M',
+    impressions: '2.1K',
     hashKey: 'cricket-family-q4'
   },
 ];

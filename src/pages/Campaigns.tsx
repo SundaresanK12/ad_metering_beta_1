@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -38,10 +39,10 @@ import MainNavigation from '@/components/MainNavigation';
 
 // Mock data for campaigns
 const initialCampaigns = [
-  { id: 1, name: 'Summer Promotion', status: 'Active', budget: '$15,000', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
-  { id: 2, name: 'New iPhone Launch', status: 'Planning', budget: '$25,000', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
-  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', budget: '$30,000', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
-  { id: 4, name: 'Holiday Bundle', status: 'Active', budget: '$18,000', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
+  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
+  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
+  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
+  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
 ];
 
 const Campaigns = () => {
@@ -53,7 +54,6 @@ const Campaigns = () => {
   const [newCampaign, setNewCampaign] = useState({
     name: '',
     status: 'Planning',
-    budget: '',
     startDate: '',
     endDate: '',
     description: ''
@@ -73,7 +73,6 @@ const Campaigns = () => {
     setNewCampaign({
       name: '',
       status: 'Planning',
-      budget: '',
       startDate: '',
       endDate: '',
       description: ''
@@ -167,15 +166,6 @@ const Campaigns = () => {
                   <option value="Completed">Completed</option>
                 </select>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Budget</label>
-                <Input 
-                  name="budget" 
-                  value={newCampaign.budget} 
-                  onChange={handleInputChange} 
-                  placeholder="$15,000" 
-                />
-              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-1 block">Start Date</label>
@@ -231,7 +221,6 @@ const Campaigns = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Budget</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -251,7 +240,6 @@ const Campaigns = () => {
                       {campaign.status}
                     </span>
                   </TableCell>
-                  <TableCell>{campaign.budget}</TableCell>
                   <TableCell>{campaign.startDate}</TableCell>
                   <TableCell>{campaign.endDate}</TableCell>
                   <TableCell className="text-right">
@@ -271,7 +259,6 @@ const Campaigns = () => {
         </CardContent>
       </Card>
 
-      {/* Edit Campaign Sheet */}
       <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
         <SheetContent>
           {currentCampaign && (
@@ -304,14 +291,6 @@ const Campaigns = () => {
                     <option value="Active">Active</option>
                     <option value="Completed">Completed</option>
                   </select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Budget</label>
-                  <Input 
-                    name="budget" 
-                    value={currentCampaign.budget} 
-                    onChange={handleEditChange} 
-                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -41,16 +42,15 @@ interface Profile {
   name: string;
   segment: string;
   ageRange: string;
-  income: string;
   interests: string;
   description: string;
 }
 
 const initialProfiles: Profile[] = [
-  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', income: '$30K-$60K', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy' },
-  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', income: '$80K-$120K', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service' },
-  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', income: '$40K-$80K', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value' },
-  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', income: '$100K+', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service' },
+  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy' },
+  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service' },
+  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value' },
+  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service' },
 ];
 
 const Profiles = () => {
@@ -64,7 +64,6 @@ const Profiles = () => {
     name: '',
     segment: '',
     ageRange: '',
-    income: '$0K-$0K',
     interests: '',
     description: ''
   });
@@ -85,7 +84,6 @@ const Profiles = () => {
       name: '',
       segment: '',
       ageRange: '',
-      income: '$0K-$0K',
       interests: '',
       description: ''
     });
@@ -187,15 +185,6 @@ const Profiles = () => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Income Range</label>
-                <Input 
-                  name="income" 
-                  value={newProfile.income} 
-                  onChange={handleInputChange} 
-                  placeholder="$0K-$0K"
-                />
-              </div>
-              <div>
                 <label className="text-sm font-medium mb-1 block">Interests</label>
                 <Input 
                   name="interests" 
@@ -240,7 +229,6 @@ const Profiles = () => {
                 <TableHead>Name</TableHead>
                 <TableHead>Segment</TableHead>
                 <TableHead>Age Range</TableHead>
-                <TableHead>Income Range</TableHead>
                 <TableHead>Interests</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -251,7 +239,6 @@ const Profiles = () => {
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>{profile.segment}</TableCell>
                   <TableCell>{profile.ageRange}</TableCell>
-                  <TableCell>{profile.income}</TableCell>
                   <TableCell className="max-w-xs truncate">{profile.interests}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -302,14 +289,6 @@ const Profiles = () => {
                   <Input 
                     name="ageRange" 
                     value={currentProfile.ageRange} 
-                    onChange={handleEditChange} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Income Range</label>
-                  <Input 
-                    name="income" 
-                    value={currentProfile.income} 
                     onChange={handleEditChange} 
                   />
                 </div>
