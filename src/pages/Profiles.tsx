@@ -36,8 +36,17 @@ import {
 } from 'lucide-react';
 import MainNavigation from '@/components/MainNavigation';
 
-// Mock data for profiles
-const initialProfiles = [
+interface Profile {
+  id: number;
+  name: string;
+  segment: string;
+  ageRange: string;
+  income: string;
+  interests: string;
+  description: string;
+}
+
+const initialProfiles: Profile[] = [
   { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', income: '$30K-$60K', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy' },
   { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', income: '$80K-$120K', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service' },
   { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', income: '$40K-$80K', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value' },
@@ -45,15 +54,17 @@ const initialProfiles = [
 ];
 
 const Profiles = () => {
-  const [profiles, setProfiles] = useState(initialProfiles);
+  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [currentProfile, setCurrentProfile] = useState<any>(null);
-  const [newProfile, setNewProfile] = useState({
+  const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
+  
+  const [newProfile, setNewProfile] = useState<Omit<Profile, 'id'>>({
     name: '',
     segment: '',
     ageRange: '',
+    income: '$0K-$0K',
     interests: '',
     description: ''
   });
@@ -74,6 +85,7 @@ const Profiles = () => {
       name: '',
       segment: '',
       ageRange: '',
+      income: '$0K-$0K',
       interests: '',
       description: ''
     });
@@ -82,9 +94,11 @@ const Profiles = () => {
   };
 
   const handleEditProfile = () => {
-    setProfiles(profiles.map(p => p.id === currentProfile.id ? currentProfile : p));
-    setIsEditOpen(false);
-    toast.success('Profile updated successfully');
+    if (currentProfile) {
+      setProfiles(profiles.map(p => p.id === currentProfile.id ? currentProfile : p));
+      setIsEditOpen(false);
+      toast.success('Profile updated successfully');
+    }
   };
 
   const handleDeleteProfile = (id: number) => {
@@ -92,7 +106,7 @@ const Profiles = () => {
     toast.success('Profile deleted successfully');
   };
 
-  const openEditSheet = (profile: any) => {
+  const openEditSheet = (profile: Profile) => {
     setCurrentProfile(profile);
     setIsEditOpen(true);
   };
@@ -104,7 +118,9 @@ const Profiles = () => {
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setCurrentProfile({ ...currentProfile, [name]: value });
+    if (currentProfile) {
+      setCurrentProfile({ ...currentProfile, [name]: value });
+    }
   };
 
   return (
@@ -171,6 +187,15 @@ const Profiles = () => {
                 />
               </div>
               <div>
+                <label className="text-sm font-medium mb-1 block">Income Range</label>
+                <Input 
+                  name="income" 
+                  value={newProfile.income} 
+                  onChange={handleInputChange} 
+                  placeholder="$0K-$0K"
+                />
+              </div>
+              <div>
                 <label className="text-sm font-medium mb-1 block">Interests</label>
                 <Input 
                   name="interests" 
@@ -215,7 +240,7 @@ const Profiles = () => {
                 <TableHead>Name</TableHead>
                 <TableHead>Segment</TableHead>
                 <TableHead>Age Range</TableHead>
-                <TableHead>Income</TableHead>
+                <TableHead>Income Range</TableHead>
                 <TableHead>Interests</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -245,7 +270,6 @@ const Profiles = () => {
         </CardContent>
       </Card>
 
-      {/* Edit Profile Sheet */}
       <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
         <SheetContent>
           {currentProfile && (
