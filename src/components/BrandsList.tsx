@@ -2,7 +2,7 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Link } from 'lucide-react';
+import { Link } from 'lucide-react';
 import { BrandData } from '@/services/brandService';
 
 interface BrandsListProps {
@@ -94,8 +94,6 @@ const BrandsList: React.FC<BrandsListProps> = ({ brands }) => {
             <TableHead>Target URL</TableHead>
             <TableHead>Creatives</TableHead>
             <TableHead>Impressions</TableHead>
-            <TableHead>Total Spend</TableHead>
-            <TableHead>Performance</TableHead>
             <TableHead>Hash Keys</TableHead>
           </TableRow>
         </TableHeader>
@@ -113,22 +111,6 @@ const BrandsList: React.FC<BrandsListProps> = ({ brands }) => {
               </TableCell>
               <TableCell>{item.adCount}</TableCell>
               <TableCell>{item.impressions}</TableCell>
-              <TableCell>{item.spend}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  {item.performance > 0 ? (
-                    <>
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                      <span className="text-green-500">{item.performance}%</span>
-                    </>
-                  ) : (
-                    <>
-                      <TrendingDown className="h-3 w-3 text-red-500" />
-                      <span className="text-red-500">{Math.abs(item.performance)}%</span>
-                    </>
-                  )}
-                </div>
-              </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {item.hashKeys.map((key, index) => (

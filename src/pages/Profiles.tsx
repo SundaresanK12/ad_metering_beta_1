@@ -54,7 +54,6 @@ const Profiles = () => {
     name: '',
     segment: '',
     ageRange: '',
-    income: '',
     interests: '',
     description: ''
   });
@@ -75,7 +74,6 @@ const Profiles = () => {
       name: '',
       segment: '',
       ageRange: '',
-      income: '',
       interests: '',
       description: ''
     });
@@ -170,15 +168,6 @@ const Profiles = () => {
                   value={newProfile.ageRange} 
                   onChange={handleInputChange} 
                   placeholder="18-25, 30-45, etc." 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Income Range</label>
-                <Input 
-                  name="income" 
-                  value={newProfile.income} 
-                  onChange={handleInputChange} 
-                  placeholder="$30K-$60K, $80K-$120K, etc." 
                 />
               </div>
               <div>

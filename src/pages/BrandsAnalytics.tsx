@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -129,20 +128,13 @@ export default function BrandsAnalytics() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <BrandStatsCard 
               icon={<Tag className="h-5 w-5" />}
               title="Top Brand"
               value="Verizon"
               change={+7.2}
               description="Based on ad impressions"
-            />
-            <BrandStatsCard
-              icon={<DollarSign className="h-5 w-5" />} 
-              title="Total Ad Spend"
-              value="$543.8M"
-              change={+12.5}
-              description="Q4 2023 vs Q3 2023"
             />
             <BrandStatsCard
               icon={<FileText className="h-5 w-5" />} 
