@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -35,29 +35,76 @@ import {
   Search, 
   Trash 
 } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import MainNavigation from '@/components/MainNavigation';
+import profileService, { CustomerProfile } from '@/services/profileService';
 
 // Mock data for campaigns
 const initialCampaigns = [
-  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
-  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
-  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
-  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
+  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans', targetProfiles: [] },
+  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release', targetProfiles: [] },
+  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday', targetProfiles: [] },
+  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season', targetProfiles: [] },
 ];
 
 const Campaigns = () => {
-  const [campaigns, setCampaigns] = useState(initialCampaigns);
+  const [campaigns, setCampaigns] = useState(() => {
+    // Try to get campaigns from sessionStorage
+    const savedCampaigns = sessionStorage.getItem('campaigns');
+    return savedCampaigns ? JSON.parse(savedCampaigns) : initialCampaigns;
+  });
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [currentCampaign, setCurrentCampaign] = useState<any>(null);
-  const [newCampaign, setNewCampaign] = useState({
-    name: '',
-    status: 'Planning',
-    startDate: '',
-    endDate: '',
-    description: ''
+  const [profiles, setProfiles] = useState<CustomerProfile[]>([]);
+  
+  const [newCampaign, setNewCampaign] = useState(() => {
+    // Try to get new campaign data from sessionStorage
+    const savedNewCampaign = sessionStorage.getItem('newCampaign');
+    return savedNewCampaign ? JSON.parse(savedNewCampaign) : {
+      name: '',
+      status: 'Planning',
+      startDate: '',
+      endDate: '',
+      description: '',
+      targetProfiles: []
+    };
   });
+
+  // Save campaigns to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('campaigns', JSON.stringify(campaigns));
+  }, [campaigns]);
+
+  // Save new campaign data to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('newCampaign', JSON.stringify(newCampaign));
+  }, [newCampaign]);
+
+  // Save current campaign data to sessionStorage
+  useEffect(() => {
+    if (currentCampaign) {
+      sessionStorage.setItem('currentCampaign', JSON.stringify(currentCampaign));
+    }
+  }, [currentCampaign]);
+
+  // Load profiles
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const fetchedProfiles = await profileService.getProfiles();
+      setProfiles(fetchedProfiles || []);
+    };
+    
+    fetchProfiles();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -75,7 +122,8 @@ const Campaigns = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: ''
+      description: '',
+      targetProfiles: []
     });
     setIsAddOpen(false);
     toast.success('Campaign created successfully');
@@ -84,6 +132,8 @@ const Campaigns = () => {
   const handleEditCampaign = () => {
     setCampaigns(campaigns.map(c => c.id === currentCampaign.id ? currentCampaign : c));
     setIsEditOpen(false);
+    // Remove the current campaign from session storage after successful edit
+    sessionStorage.removeItem('currentCampaign');
     toast.success('Campaign updated successfully');
   };
 
@@ -93,7 +143,7 @@ const Campaigns = () => {
   };
 
   const openEditSheet = (campaign: any) => {
-    setCurrentCampaign(campaign);
+    setCurrentCampaign({...campaign});
     setIsEditOpen(true);
   };
 
@@ -105,6 +155,39 @@ const Campaigns = () => {
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setCurrentCampaign({ ...currentCampaign, [name]: value });
+  };
+
+  const handleProfileSelect = (profileId: string) => {
+    // Check if already selected
+    if (newCampaign.targetProfiles.includes(profileId)) {
+      setNewCampaign({
+        ...newCampaign,
+        targetProfiles: newCampaign.targetProfiles.filter((id: string) => id !== profileId)
+      });
+    } else {
+      setNewCampaign({
+        ...newCampaign,
+        targetProfiles: [...newCampaign.targetProfiles, profileId]
+      });
+    }
+  };
+
+  const handleEditProfileSelect = (profileId: string) => {
+    // Ensure targetProfiles exists in currentCampaign
+    const currentTargetProfiles = currentCampaign.targetProfiles || [];
+    
+    // Check if already selected
+    if (currentTargetProfiles.includes(profileId)) {
+      setCurrentCampaign({
+        ...currentCampaign,
+        targetProfiles: currentTargetProfiles.filter((id: string) => id !== profileId)
+      });
+    } else {
+      setCurrentCampaign({
+        ...currentCampaign,
+        targetProfiles: [...currentTargetProfiles, profileId]
+      });
+    }
   };
 
   return (
@@ -196,6 +279,29 @@ const Campaigns = () => {
                   rows={4}
                 />
               </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Target Profiles</label>
+                <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
+                  {profiles.length > 0 ? (
+                    profiles.map(profile => (
+                      <div key={profile.id} className="flex items-center space-x-2 mb-2">
+                        <input
+                          type="checkbox"
+                          id={`profile-${profile.id}`}
+                          checked={newCampaign.targetProfiles.includes(profile.id)}
+                          onChange={() => handleProfileSelect(profile.id)}
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor={`profile-${profile.id}`} className="text-sm">
+                          {profile.name}
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No profiles available</p>
+                  )}
+                </div>
+              </div>
               <Button onClick={handleAddCampaign} className="w-full">
                 Create Campaign
               </Button>
@@ -223,6 +329,7 @@ const Campaigns = () => {
                 <TableHead>Status</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
+                <TableHead>Target Profiles</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -242,6 +349,15 @@ const Campaigns = () => {
                   </TableCell>
                   <TableCell>{campaign.startDate}</TableCell>
                   <TableCell>{campaign.endDate}</TableCell>
+                  <TableCell>
+                    {campaign.targetProfiles && campaign.targetProfiles.length > 0 ? (
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {campaign.targetProfiles.length} profile(s)
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 text-xs">No profiles</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => openEditSheet(campaign)}>
@@ -320,6 +436,29 @@ const Campaigns = () => {
                     onChange={handleEditChange} 
                     rows={4}
                   />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Target Profiles</label>
+                  <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
+                    {profiles.length > 0 ? (
+                      profiles.map(profile => (
+                        <div key={profile.id} className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            id={`edit-profile-${profile.id}`}
+                            checked={(currentCampaign.targetProfiles || []).includes(profile.id)}
+                            onChange={() => handleEditProfileSelect(profile.id)}
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <label htmlFor={`edit-profile-${profile.id}`} className="text-sm">
+                            {profile.name}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No profiles available</p>
+                    )}
+                  </div>
                 </div>
                 <Button onClick={handleEditCampaign} className="w-full">
                   Update Campaign

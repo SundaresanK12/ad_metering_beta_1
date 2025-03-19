@@ -7,7 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Search, Tag, BarChart, PieChart, FileText, DollarSign } from 'lucide-react';
+import { 
+  CalendarIcon, 
+  Search, 
+  Tag, 
+  BarChart, 
+  PieChart, 
+  FileText, 
+  DollarSign,
+  Users
+} from 'lucide-react';
 import BrandsList from '@/components/BrandsList';
 import BrandStatsCard from '@/components/BrandStatsCard';
 import MarketShareChart from '@/components/MarketShareChart';
@@ -16,6 +25,7 @@ import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
 import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
 import brandService, { BrandData } from '@/services/brandService';
+import profileService, { CustomerProfile } from '@/services/profileService';
 
 export default function BrandsAnalytics() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date('2023-09-01'));
@@ -24,6 +34,8 @@ export default function BrandsAnalytics() {
   const [activeTab, setActiveTab] = useState('overview');
   const [brands, setBrands] = useState<BrandData[]>([]);
   const [filteredBrands, setFilteredBrands] = useState<BrandData[]>([]);
+  const [profiles, setProfiles] = useState<CustomerProfile[]>([]);
+  const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -32,25 +44,62 @@ export default function BrandsAnalytics() {
       setFilteredBrands(fetchedBrands || []);
     };
     
+    const fetchProfiles = async () => {
+      const fetchedProfiles = await profileService.getProfiles();
+      setProfiles(fetchedProfiles || []);
+    };
+    
     fetchBrands();
+    fetchProfiles();
+    
+    // Load filters from session storage if available
+    const savedProfileFilters = sessionStorage.getItem('selectedProfileFilters');
+    if (savedProfileFilters) {
+      setSelectedProfiles(JSON.parse(savedProfileFilters));
+    }
   }, []);
 
-  const handleSearch = () => {
-    if (!hashKey.trim()) {
-      setFilteredBrands(brands);
-      return;
-    }
+  // Save selected profiles to session storage
+  useEffect(() => {
+    sessionStorage.setItem('selectedProfileFilters', JSON.stringify(selectedProfiles));
+  }, [selectedProfiles]);
 
-    const searchTerm = hashKey.trim().toLowerCase();
-    const filtered = brands.filter(brand => {
-      return (
-        brand.brand.toLowerCase().includes(searchTerm) ||
-        brand.targetUrl.toLowerCase().includes(searchTerm) ||
-        brand.hashKeys.some(key => key.toLowerCase().includes(searchTerm))
-      );
-    });
+  const handleSearch = () => {
+    let filtered = brands;
+    
+    // Filter by hash key if provided
+    if (hashKey.trim()) {
+      const searchTerm = hashKey.trim().toLowerCase();
+      filtered = filtered.filter(brand => {
+        return (
+          brand.brand.toLowerCase().includes(searchTerm) ||
+          brand.targetUrl.toLowerCase().includes(searchTerm) ||
+          brand.hashKeys.some(key => key.toLowerCase().includes(searchTerm))
+        );
+      });
+    }
+    
+    // Filter by selected profiles if any are selected
+    if (selectedProfiles.length > 0) {
+      // This is just a mockup of filtering by profiles
+      // In a real app, you'd query your API with these profile IDs
+      filtered = filtered.filter(brand => {
+        // Example logic: filter brands that might be relevant to the profiles
+        // This is a placeholder - real implementation would use actual data relations
+        const randomMatch = Math.random() > 0.5;
+        return randomMatch;
+      });
+    }
     
     setFilteredBrands(filtered);
+  };
+
+  const toggleProfileSelection = (profileId: string) => {
+    if (selectedProfiles.includes(profileId)) {
+      setSelectedProfiles(selectedProfiles.filter(id => id !== profileId));
+    } else {
+      setSelectedProfiles([...selectedProfiles, profileId]);
+    }
   };
 
   return (
@@ -115,14 +164,46 @@ export default function BrandsAnalytics() {
           </Button>
         </div>
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              {selectedProfiles.length ? `${selectedProfiles.length} Profiles` : 'Filter by Profile'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-3" align="start">
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Filter by Target Profiles</h4>
+              <div className="max-h-48 overflow-y-auto space-y-2">
+                {profiles.map(profile => (
+                  <div key={profile.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={`analytics-profile-${profile.id}`}
+                      checked={selectedProfiles.includes(profile.id)}
+                      onChange={() => toggleProfileSelection(profile.id)}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                    />
+                    <label htmlFor={`analytics-profile-${profile.id}`} className="text-sm">
+                      {profile.name}
+                    </label>
+                  </div>
+                ))}
+                {profiles.length === 0 && (
+                  <p className="text-sm text-gray-500">No profiles available</p>
+                )}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <Button onClick={handleSearch}>Apply Filters</Button>
       </div>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="brands">Brands</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -152,6 +233,7 @@ export default function BrandsAnalytics() {
                 </CardTitle>
                 <CardDescription>
                   Distribution based on ad impressions
+                  {selectedProfiles.length > 0 && ` (filtered by ${selectedProfiles.length} profiles)`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -167,6 +249,7 @@ export default function BrandsAnalytics() {
                 </CardTitle>
                 <CardDescription>
                   Monthly spending by major brands
+                  {selectedProfiles.length > 0 && ` (filtered by ${selectedProfiles.length} profiles)`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -203,31 +286,13 @@ export default function BrandsAnalytics() {
               </CardTitle>
               <CardDescription>
                 Analyzing {hashKey ? `ads with hash key: ${hashKey}` : 'all ads'} from {startDate && format(startDate, 'MMM dd, yyyy')} to {endDate && format(endDate, 'MMM dd, yyyy')}
+                {selectedProfiles.length > 0 && `, filtered by ${selectedProfiles.length} profiles`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <BrandsList brands={filteredBrands} />
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="performance">
-          <div className="grid grid-cols-1 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Revenue vs. Ad Spend Performance
-                </CardTitle>
-                <CardDescription>
-                  Q4 2023 vs Q3 2023 comparison
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="min-h-96">
-                <SpendingTrendsChart isDetailed />
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </div>
