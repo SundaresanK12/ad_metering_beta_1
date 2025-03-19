@@ -99,8 +99,14 @@ const Campaigns = () => {
   // Load profiles
   useEffect(() => {
     const fetchProfiles = async () => {
-      const fetchedProfiles = await profileService.getProfiles();
-      setProfiles(fetchedProfiles || []);
+      try {
+        const fetchedProfiles = await profileService.getProfiles();
+        console.log("Fetched profiles:", fetchedProfiles);
+        setProfiles(fetchedProfiles || []);
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        toast.error("Failed to load profiles");
+      }
     };
     
     fetchProfiles();
@@ -188,6 +194,12 @@ const Campaigns = () => {
         targetProfiles: [...currentTargetProfiles, profileId]
       });
     }
+  };
+
+  // Find profile names for display
+  const getProfileNameById = (profileId: string) => {
+    const profile = profiles.find(p => p.id === profileId);
+    return profile ? profile.name : 'Unknown Profile';
   };
 
   return (
@@ -280,10 +292,10 @@ const Campaigns = () => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Target Profiles</label>
-                <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
-                  {profiles.length > 0 ? (
-                    profiles.map(profile => (
+                <label className="text-sm font-medium mb-1 block">Target Profiles (Optional)</label>
+                {profiles.length > 0 ? (
+                  <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
+                    {profiles.map(profile => (
                       <div key={profile.id} className="flex items-center space-x-2 mb-2">
                         <input
                           type="checkbox"
@@ -293,14 +305,14 @@ const Campaigns = () => {
                           className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                         <label htmlFor={`profile-${profile.id}`} className="text-sm">
-                          {profile.name}
+                          {profile.name} - {profile.segmentSize} users
                         </label>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No profiles available</p>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No profiles available</p>
+                )}
               </div>
               <Button onClick={handleAddCampaign} className="w-full">
                 Create Campaign
@@ -351,11 +363,15 @@ const Campaigns = () => {
                   <TableCell>{campaign.endDate}</TableCell>
                   <TableCell>
                     {campaign.targetProfiles && campaign.targetProfiles.length > 0 ? (
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {campaign.targetProfiles.length} profile(s)
-                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {campaign.targetProfiles.map((profileId: string, index: number) => (
+                          <span key={profileId} className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {getProfileNameById(profileId)}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
-                      <span className="text-gray-400 text-xs">No profiles</span>
+                      <span className="text-gray-400 text-xs">No profiles targeted</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -438,10 +454,10 @@ const Campaigns = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Target Profiles</label>
-                  <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
-                    {profiles.length > 0 ? (
-                      profiles.map(profile => (
+                  <label className="text-sm font-medium mb-1 block">Target Profiles (Optional)</label>
+                  {profiles.length > 0 ? (
+                    <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
+                      {profiles.map(profile => (
                         <div key={profile.id} className="flex items-center space-x-2 mb-2">
                           <input
                             type="checkbox"
@@ -451,14 +467,14 @@ const Campaigns = () => {
                             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
                           <label htmlFor={`edit-profile-${profile.id}`} className="text-sm">
-                            {profile.name}
+                            {profile.name} - {profile.segmentSize} users
                           </label>
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">No profiles available</p>
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No profiles available</p>
+                  )}
                 </div>
                 <Button onClick={handleEditCampaign} className="w-full">
                   Update Campaign

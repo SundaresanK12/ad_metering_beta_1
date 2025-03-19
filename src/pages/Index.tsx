@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BarChart, Flag, User } from 'lucide-react';
+import { BarChart, Flag, TrendingUp, User } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -15,7 +15,7 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
           <Link to="/brands-analytics" className="group">
             <div className="flex flex-col items-center p-6 bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
               <BarChart className="h-12 w-12 text-primary mb-4" />
@@ -38,6 +38,19 @@ const Index = () => {
               </p>
               <Button variant="link" className="mt-4 group-hover:underline">
                 Manage Campaigns
+              </Button>
+            </div>
+          </Link>
+
+          <Link to="/performance" className="group">
+            <div className="flex flex-col items-center p-6 bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
+              <TrendingUp className="h-12 w-12 text-primary mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Performance</h2>
+              <p className="text-center text-muted-foreground">
+                Track campaign performance metrics
+              </p>
+              <Button variant="link" className="mt-4 group-hover:underline">
+                View Performance
               </Button>
             </div>
           </Link>
