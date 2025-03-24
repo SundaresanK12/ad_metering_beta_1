@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -70,7 +69,18 @@ interface Profile {
 }
 
 const initialProfiles: Profile[] = [
-  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy', dayTimeparting: ['Evenings', 'Weekends'], geographyRegion: ['Urban areas', 'Major cities'], deviceSpecs: ['Mobile devices', 'High-end phones'], domainTargeting: 'Social media, Entertainment, Gaming' },
+  { 
+    id: 1, 
+    name: 'Urban Youth', 
+    segment: 'Youth', 
+    ageRange: '18-25', 
+    interests: 'Social media, gaming, streaming', 
+    description: 'Young urban professionals who are tech-savvy', 
+    dayTimeparting: ['Evenings', 'Weekends'], 
+    geographyRegion: ['Urban areas', 'Major cities'], 
+    deviceSpecs: ['Mobile devices', 'High-end phones'], 
+    domainTargeting: 'Social media, Entertainment, Gaming' 
+  },
   { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service', dayTimeparting: ['Mornings', 'Evenings'], geographyRegion: ['Suburban areas'], deviceSpecs: ['Various devices', 'Tablets'], domainTargeting: 'Family content, Education, Shopping' },
   { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value', dayTimeparting: ['Morning', 'Afternoon'], geographyRegion: ['Rural', 'Suburban'], deviceSpecs: ['Basic smartphones', 'Desktop'], domainTargeting: 'News, Health, Travel' },
   { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service', dayTimeparting: ['Business hours'], geographyRegion: ['Business districts'], deviceSpecs: ['Business devices', 'Laptops'], domainTargeting: 'Business, Finance, Productivity' },
@@ -238,7 +248,7 @@ const Profiles = () => {
                 <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
                 <MultiSelectField
                   options={TIME_PARTING_OPTIONS}
-                  selectedValues={newProfile.dayTimeparting}
+                  selectedValues={newProfile.dayTimeparting || []} 
                   onChange={(values) => handleMultiSelectChange('dayTimeparting', values)}
                   placeholder="Select time periods"
                 />
@@ -247,7 +257,7 @@ const Profiles = () => {
                 <label className="text-sm font-medium mb-1 block">Geography Region</label>
                 <MultiSelectField
                   options={GEOGRAPHY_OPTIONS}
-                  selectedValues={newProfile.geographyRegion}
+                  selectedValues={newProfile.geographyRegion || []} 
                   onChange={(values) => handleMultiSelectChange('geographyRegion', values)}
                   placeholder="Select regions"
                 />
@@ -256,7 +266,7 @@ const Profiles = () => {
                 <label className="text-sm font-medium mb-1 block">Device Specifications</label>
                 <MultiSelectField
                   options={DEVICE_OPTIONS}
-                  selectedValues={newProfile.deviceSpecs}
+                  selectedValues={newProfile.deviceSpecs || []} 
                   onChange={(values) => handleMultiSelectChange('deviceSpecs', values)}
                   placeholder="Select devices"
                 />
@@ -317,8 +327,8 @@ const Profiles = () => {
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>{profile.segment}</TableCell>
                   <TableCell>{profile.ageRange}</TableCell>
-                  <TableCell>{profile.dayTimeparting.join(', ')}</TableCell>
-                  <TableCell>{profile.geographyRegion.join(', ')}</TableCell>
+                  <TableCell>{Array.isArray(profile.dayTimeparting) ? profile.dayTimeparting.join(', ') : ''}</TableCell>
+                  <TableCell>{Array.isArray(profile.geographyRegion) ? profile.geographyRegion.join(', ') : ''}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => openEditSheet(profile)}>
@@ -383,7 +393,7 @@ const Profiles = () => {
                   <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
                   <MultiSelectField
                     options={TIME_PARTING_OPTIONS}
-                    selectedValues={currentProfile.dayTimeparting}
+                    selectedValues={currentProfile.dayTimeparting || []}
                     onChange={(values) => handleEditMultiSelectChange('dayTimeparting', values)}
                     placeholder="Select time periods"
                   />
@@ -392,7 +402,7 @@ const Profiles = () => {
                   <label className="text-sm font-medium mb-1 block">Geography Region</label>
                   <MultiSelectField
                     options={GEOGRAPHY_OPTIONS}
-                    selectedValues={currentProfile.geographyRegion}
+                    selectedValues={currentProfile.geographyRegion || []}
                     onChange={(values) => handleEditMultiSelectChange('geographyRegion', values)}
                     placeholder="Select regions"
                   />
@@ -401,7 +411,7 @@ const Profiles = () => {
                   <label className="text-sm font-medium mb-1 block">Device Specifications</label>
                   <MultiSelectField
                     options={DEVICE_OPTIONS}
-                    selectedValues={currentProfile.deviceSpecs}
+                    selectedValues={currentProfile.deviceSpecs || []}
                     onChange={(values) => handleEditMultiSelectChange('deviceSpecs', values)}
                     placeholder="Select devices"
                   />

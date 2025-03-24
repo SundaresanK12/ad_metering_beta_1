@@ -26,21 +26,24 @@ interface MultiSelectProps {
 
 const MultiSelectField: React.FC<MultiSelectProps> = ({
   options,
-  selectedValues,
+  selectedValues = [], // Provide a default empty array to prevent undefined
   onChange,
   placeholder,
 }) => {
   const [open, setOpen] = useState(false);
+  
+  // Ensure selectedValues is always an array
+  const values = Array.isArray(selectedValues) ? selectedValues : [];
 
   const handleSelect = (value: string) => {
-    const selected = selectedValues.includes(value)
-      ? selectedValues.filter((item) => item !== value)
-      : [...selectedValues, value];
+    const selected = values.includes(value)
+      ? values.filter((item) => item !== value)
+      : [...values, value];
     onChange(selected);
   };
 
   const handleRemove = (value: string) => {
-    onChange(selectedValues.filter((item) => item !== value));
+    onChange(values.filter((item) => item !== value));
   };
 
   return (
@@ -53,8 +56,8 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
           className="w-full justify-between h-auto min-h-10"
         >
           <div className="flex flex-wrap gap-1 py-1">
-            {selectedValues.length > 0 ? (
-              selectedValues.map((value) => (
+            {values.length > 0 ? (
+              values.map((value) => (
                 <Badge key={value} className="mr-1 mb-1">
                   {value}
                   <button
@@ -90,7 +93,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    selectedValues.includes(option) ? "opacity-100" : "opacity-0"
+                    values.includes(option) ? "opacity-100" : "opacity-0"
                   )}
                 />
                 {option}
