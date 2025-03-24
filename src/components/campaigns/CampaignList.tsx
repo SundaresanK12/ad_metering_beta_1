@@ -11,11 +11,10 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash } from 'lucide-react';
-import { CustomerProfile } from '@/services/profileService';
 
 interface CampaignListProps {
   campaigns: any[];
-  profiles: CustomerProfile[];
+  profiles: any[];
   openEditSheet: (campaign: any) => void;
   handleDeleteCampaign: (id: number) => void;
 }
