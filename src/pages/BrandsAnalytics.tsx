@@ -21,7 +21,7 @@ import BrandsList from '@/components/BrandsList';
 import BrandStatsCard from '@/components/BrandStatsCard';
 import MarketShareChart from '@/components/MarketShareChart';
 import SpendingTrendsChart from '@/components/SpendingTrendsChart';
-import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
+import PerformanceTab from '@/components/performance/PerformanceTab';
 import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
 import brandService, { BrandData } from '@/services/brandService';
@@ -201,9 +201,10 @@ export default function BrandsAnalytics() {
       </div>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="brands">Brands</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -257,24 +258,6 @@ export default function BrandsAnalytics() {
               </CardContent>
             </Card>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <RevenuePerformanceCard
-              brand="Verizon"
-              revenue={+8.4}
-              spend={+10.2}
-            />
-            <RevenuePerformanceCard
-              brand="AT&T"
-              revenue={-2.1}
-              spend={+5.7}
-            />
-            <RevenuePerformanceCard
-              brand="T-Mobile"
-              revenue={+12.3}
-              spend={+15.8}
-            />
-          </div>
         </TabsContent>
 
         <TabsContent value="brands">
@@ -293,6 +276,10 @@ export default function BrandsAnalytics() {
               <BrandsList brands={filteredBrands} />
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="performance">
+          <PerformanceTab selectedProfiles={selectedProfiles} />
         </TabsContent>
       </Tabs>
     </div>
