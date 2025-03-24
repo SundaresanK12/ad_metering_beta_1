@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,12 +16,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 
 interface MultiSelectProps {
   options: string[];
   selectedValues: string[];
   onChange: (values: string[]) => void;
   placeholder: string;
+  allowCustomOption?: boolean;
+  useCheckboxes?: boolean;
 }
 
 const MultiSelectField: React.FC<MultiSelectProps> = ({
@@ -29,8 +33,11 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   selectedValues = [], // Provide a default empty array to prevent undefined
   onChange,
   placeholder,
+  allowCustomOption = false,
+  useCheckboxes = false,
 }) => {
   const [open, setOpen] = useState(false);
+  const [customOption, setCustomOption] = useState('');
   
   // Ensure selectedValues is always an array
   const values = Array.isArray(selectedValues) ? selectedValues : [];
@@ -45,6 +52,21 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   const handleRemove = (value: string) => {
     onChange(values.filter((item) => item !== value));
   };
+
+  const addCustomOption = () => {
+    if (customOption && !values.includes(customOption)) {
+      const newValues = [...values, customOption];
+      onChange(newValues);
+      setCustomOption('');
+    }
+  };
+
+  // Close popover when clicking outside
+  useEffect(() => {
+    if (!open) {
+      setCustomOption('');
+    }
+  }, [open]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -84,22 +106,70 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
           <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
           <CommandEmpty>No options found.</CommandEmpty>
           <CommandGroup className="max-h-60 overflow-auto">
-            {options.map((option) => (
-              <CommandItem
-                key={option}
-                value={option}
-                onSelect={() => handleSelect(option)}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    values.includes(option) ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option}
-              </CommandItem>
-            ))}
+            {useCheckboxes ? (
+              // Checkbox version
+              <div className="p-2 space-y-2">
+                {options.map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={`option-${option}`}
+                      checked={values.includes(option)}
+                      onCheckedChange={() => handleSelect(option)}
+                    />
+                    <label 
+                      htmlFor={`option-${option}`}
+                      className="text-sm cursor-pointer flex-1"
+                      onClick={() => handleSelect(option)}
+                    >
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Regular CommandItem version
+              options.map((option) => (
+                <CommandItem
+                  key={option}
+                  value={option}
+                  onSelect={() => handleSelect(option)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      values.includes(option) ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option}
+                </CommandItem>
+              ))
+            )}
           </CommandGroup>
+          
+          {allowCustomOption && (
+            <div className="border-t p-2 flex gap-2">
+              <Input
+                placeholder="Add custom option..."
+                value={customOption}
+                onChange={(e) => setCustomOption(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustomOption();
+                  }
+                }}
+              />
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm"
+                onClick={addCustomOption}
+                disabled={!customOption}
+              >
+                Add
+              </Button>
+            </div>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

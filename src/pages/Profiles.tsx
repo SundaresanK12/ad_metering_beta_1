@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -55,6 +56,12 @@ const DEVICE_OPTIONS = [
   'iOS Devices', 'Android Devices', 'Smart TVs', 'Gaming Consoles'
 ];
 
+const DOMAIN_OPTIONS = [
+  'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com',
+  'google.com', 'youtube.com', 'tiktok.com', 'pinterest.com',
+  'snapchat.com', 'reddit.com', 'amazon.com', 'netflix.com'
+];
+
 interface Profile {
   id: number;
   name: string;
@@ -65,7 +72,7 @@ interface Profile {
   dayTimeparting: string[];
   geographyRegion: string[];
   deviceSpecs: string[];
-  domainTargeting: string;
+  domainTargeting: string[];
 }
 
 const initialProfiles: Profile[] = [
@@ -79,11 +86,44 @@ const initialProfiles: Profile[] = [
     dayTimeparting: ['Evenings', 'Weekends'], 
     geographyRegion: ['Urban areas', 'Major cities'], 
     deviceSpecs: ['Mobile devices', 'High-end phones'], 
-    domainTargeting: 'Social media, Entertainment, Gaming' 
+    domainTargeting: ['facebook.com', 'instagram.com', 'youtube.com']
   },
-  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service', dayTimeparting: ['Mornings', 'Evenings'], geographyRegion: ['Suburban areas'], deviceSpecs: ['Various devices', 'Tablets'], domainTargeting: 'Family content, Education, Shopping' },
-  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value', dayTimeparting: ['Morning', 'Afternoon'], geographyRegion: ['Rural', 'Suburban'], deviceSpecs: ['Basic smartphones', 'Desktop'], domainTargeting: 'News, Health, Travel' },
-  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service', dayTimeparting: ['Business hours'], geographyRegion: ['Business districts'], deviceSpecs: ['Business devices', 'Laptops'], domainTargeting: 'Business, Finance, Productivity' },
+  { 
+    id: 2, 
+    name: 'Family Premium', 
+    segment: 'Family', 
+    ageRange: '30-45', 
+    interests: 'Family plans, data sharing, security', 
+    description: 'Families looking for premium reliable service', 
+    dayTimeparting: ['Mornings', 'Evenings'], 
+    geographyRegion: ['Suburban areas'], 
+    deviceSpecs: ['Various devices', 'Tablets'], 
+    domainTargeting: ['youtube.com', 'google.com', 'amazon.com'] 
+  },
+  { 
+    id: 3, 
+    name: 'Senior Value', 
+    segment: 'Senior', 
+    ageRange: '60+', 
+    interests: 'Reliability, customer service, value', 
+    description: 'Seniors looking for simple plans with good value', 
+    dayTimeparting: ['Morning', 'Afternoon'], 
+    geographyRegion: ['Rural', 'Suburban'], 
+    deviceSpecs: ['Basic smartphones', 'Desktop'], 
+    domainTargeting: ['google.com', 'facebook.com'] 
+  },
+  { 
+    id: 4, 
+    name: 'Business Small', 
+    segment: 'Business', 
+    ageRange: '25-55', 
+    interests: 'Reliability, customer service, data plans', 
+    description: 'Small business owners needing reliable service', 
+    dayTimeparting: ['Business hours'], 
+    geographyRegion: ['Business districts'], 
+    deviceSpecs: ['Business devices', 'Laptops'], 
+    domainTargeting: ['linkedin.com', 'google.com'] 
+  },
 ];
 
 const Profiles = () => {
@@ -102,7 +142,7 @@ const Profiles = () => {
     dayTimeparting: [],
     geographyRegion: [],
     deviceSpecs: [],
-    domainTargeting: ''
+    domainTargeting: []
   });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +166,7 @@ const Profiles = () => {
       dayTimeparting: [],
       geographyRegion: [],
       deviceSpecs: [],
-      domainTargeting: ''
+      domainTargeting: []
     });
     setIsAddOpen(false);
     toast.success('Profile created successfully');
@@ -162,11 +202,11 @@ const Profiles = () => {
     }
   };
 
-  const handleMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs'>, values: string[]) => {
+  const handleMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs' | 'domainTargeting'>, values: string[]) => {
     setNewProfile({ ...newProfile, [field]: values });
   };
 
-  const handleEditMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs'>, values: string[]) => {
+  const handleEditMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs' | 'domainTargeting'>, values: string[]) => {
     if (currentProfile) {
       setCurrentProfile({ ...currentProfile, [field]: values });
     }
@@ -273,11 +313,13 @@ const Profiles = () => {
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
-                <Input 
-                  name="domainTargeting" 
-                  value={newProfile.domainTargeting} 
-                  onChange={handleInputChange} 
-                  placeholder="Social media, News, Entertainment" 
+                <MultiSelectField
+                  options={DOMAIN_OPTIONS}
+                  selectedValues={newProfile.domainTargeting || []} 
+                  onChange={(values) => handleMultiSelectChange('domainTargeting', values)}
+                  placeholder="Select domains"
+                  useCheckboxes={true}
+                  allowCustomOption={true}
                 />
               </div>
               <div>
@@ -317,7 +359,7 @@ const Profiles = () => {
                 <TableHead>Segment</TableHead>
                 <TableHead>Age Range</TableHead>
                 <TableHead>Day/Time Parting</TableHead>
-                <TableHead>Geography</TableHead>
+                <TableHead>Domains</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -328,7 +370,7 @@ const Profiles = () => {
                   <TableCell>{profile.segment}</TableCell>
                   <TableCell>{profile.ageRange}</TableCell>
                   <TableCell>{Array.isArray(profile.dayTimeparting) ? profile.dayTimeparting.join(', ') : ''}</TableCell>
-                  <TableCell>{Array.isArray(profile.geographyRegion) ? profile.geographyRegion.join(', ') : ''}</TableCell>
+                  <TableCell>{Array.isArray(profile.domainTargeting) ? profile.domainTargeting.join(', ') : ''}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => openEditSheet(profile)}>
@@ -418,10 +460,13 @@ const Profiles = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
-                  <Input 
-                    name="domainTargeting" 
-                    value={currentProfile.domainTargeting} 
-                    onChange={handleEditChange} 
+                  <MultiSelectField
+                    options={DOMAIN_OPTIONS}
+                    selectedValues={currentProfile.domainTargeting || []}
+                    onChange={(values) => handleEditMultiSelectChange('domainTargeting', values)}
+                    placeholder="Select domains"
+                    useCheckboxes={true}
+                    allowCustomOption={true}
                   />
                 </div>
                 <div>

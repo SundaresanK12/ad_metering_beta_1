@@ -39,8 +39,6 @@ const Campaigns = () => {
     openEditSheet,
     handleInputChange,
     handleEditChange,
-    handleDomainsChange,
-    handleEditDomainsChange,
   } = useCampaignManagement();
 
   return (
@@ -91,7 +89,6 @@ const Campaigns = () => {
             campaign={newCampaign}
             profiles={profiles}
             handleInputChange={handleInputChange}
-            handleDomainsChange={handleDomainsChange}
             handleSubmit={handleAddCampaign}
             submitButtonText="Create Campaign"
           />
@@ -113,7 +110,6 @@ const Campaigns = () => {
                 campaign={currentCampaign}
                 profiles={profiles}
                 handleInputChange={handleEditChange}
-                handleDomainsChange={handleEditDomainsChange}
                 handleSubmit={handleEditCampaign}
                 submitButtonText="Update Campaign"
               />

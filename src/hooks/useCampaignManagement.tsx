@@ -5,10 +5,10 @@ import profileService from '@/services/profileService';
 
 // Mock data for campaigns
 const initialCampaigns = [
-  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans', domains: ['facebook.com', 'instagram.com'] },
-  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release', domains: ['google.com', 'youtube.com'] },
-  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday', domains: ['linkedin.com'] },
-  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season', domains: ['facebook.com', 'twitter.com'] },
+  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
+  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
+  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
+  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
 ];
 
 export const useCampaignManagement = () => {
@@ -32,8 +32,7 @@ export const useCampaignManagement = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: '',
-      domains: []
+      description: ''
     };
   });
 
@@ -86,8 +85,7 @@ export const useCampaignManagement = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: '',
-      domains: []
+      description: ''
     });
     setIsAddOpen(false);
     toast.success('Campaign created successfully');
@@ -121,14 +119,6 @@ export const useCampaignManagement = () => {
     setCurrentCampaign({ ...currentCampaign, [name]: value });
   };
 
-  const handleDomainsChange = (domains: string[]) => {
-    setNewCampaign({ ...newCampaign, domains });
-  };
-
-  const handleEditDomainsChange = (domains: string[]) => {
-    setCurrentCampaign({ ...currentCampaign, domains });
-  };
-
   return {
     campaigns: filteredCampaigns,
     searchTerm,
@@ -145,8 +135,6 @@ export const useCampaignManagement = () => {
     handleDeleteCampaign,
     openEditSheet,
     handleInputChange,
-    handleEditChange,
-    handleDomainsChange,
-    handleEditDomainsChange
+    handleEditChange
   };
 };
