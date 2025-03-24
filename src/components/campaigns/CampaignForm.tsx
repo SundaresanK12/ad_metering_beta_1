@@ -12,11 +12,9 @@ interface CampaignFormProps {
     startDate: string;
     endDate: string;
     description: string;
-    targetProfiles: string[];
   };
   profiles: CustomerProfile[];
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-  handleProfileSelect: (profileId: string) => void;
   handleSubmit: () => void;
   submitButtonText: string;
 }
@@ -25,7 +23,6 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
   campaign,
   profiles,
   handleInputChange,
-  handleProfileSelect,
   handleSubmit,
   submitButtonText
 }) => {
@@ -83,29 +80,6 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
           placeholder="Describe the campaign objectives and details"
           rows={4}
         />
-      </div>
-      <div>
-        <label className="text-sm font-medium mb-1 block">Target Profiles (Optional)</label>
-        {profiles.length > 0 ? (
-          <div className="border rounded-md p-3 max-h-40 overflow-y-auto">
-            {profiles.map(profile => (
-              <div key={profile.id} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="checkbox"
-                  id={`profile-${profile.id}`}
-                  checked={campaign.targetProfiles.includes(profile.id)}
-                  onChange={() => handleProfileSelect(profile.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label htmlFor={`profile-${profile.id}`} className="text-sm">
-                  {profile.name} - {profile.segmentSize} users
-                </label>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">No profiles available</p>
-        )}
       </div>
       <Button onClick={handleSubmit} className="w-full">
         {submitButtonText}

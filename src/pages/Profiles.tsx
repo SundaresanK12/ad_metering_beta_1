@@ -44,13 +44,17 @@ interface Profile {
   ageRange: string;
   interests: string;
   description: string;
+  dayTimeparting: string;
+  geographyRegion: string;
+  deviceSpecs: string;
+  domainTargeting: string;
 }
 
 const initialProfiles: Profile[] = [
-  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy' },
-  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service' },
-  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value' },
-  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service' },
+  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy', dayTimeparting: 'Evenings, Weekends', geographyRegion: 'Urban areas, Major cities', deviceSpecs: 'Mobile devices, High-end phones', domainTargeting: 'Social media, Entertainment, Gaming' },
+  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service', dayTimeparting: 'Mornings, Evenings', geographyRegion: 'Suburban areas', deviceSpecs: 'Various devices, Tablets', domainTargeting: 'Family content, Education, Shopping' },
+  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value', dayTimeparting: 'Morning, Afternoon', geographyRegion: 'Rural, Suburban', deviceSpecs: 'Basic smartphones, Desktop', domainTargeting: 'News, Health, Travel' },
+  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service', dayTimeparting: 'Business hours', geographyRegion: 'Business districts', deviceSpecs: 'Business devices, Laptops', domainTargeting: 'Business, Finance, Productivity' },
 ];
 
 const Profiles = () => {
@@ -65,7 +69,11 @@ const Profiles = () => {
     segment: '',
     ageRange: '',
     interests: '',
-    description: ''
+    description: '',
+    dayTimeparting: '',
+    geographyRegion: '',
+    deviceSpecs: '',
+    domainTargeting: ''
   });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +93,11 @@ const Profiles = () => {
       segment: '',
       ageRange: '',
       interests: '',
-      description: ''
+      description: '',
+      dayTimeparting: '',
+      geographyRegion: '',
+      deviceSpecs: '',
+      domainTargeting: ''
     });
     setIsAddOpen(false);
     toast.success('Profile created successfully');
@@ -149,7 +161,7 @@ const Profiles = () => {
               Create Profile
             </Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="overflow-y-auto">
             <SheetHeader>
               <SheetTitle>Create New Profile</SheetTitle>
               <SheetDescription>
@@ -194,6 +206,42 @@ const Profiles = () => {
                 />
               </div>
               <div>
+                <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
+                <Input 
+                  name="dayTimeparting" 
+                  value={newProfile.dayTimeparting} 
+                  onChange={handleInputChange} 
+                  placeholder="Evenings, Weekends, Business hours" 
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Geography Region</label>
+                <Input 
+                  name="geographyRegion" 
+                  value={newProfile.geographyRegion} 
+                  onChange={handleInputChange} 
+                  placeholder="Urban areas, Suburban, Rural" 
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Device Specifications</label>
+                <Input 
+                  name="deviceSpecs" 
+                  value={newProfile.deviceSpecs} 
+                  onChange={handleInputChange} 
+                  placeholder="Mobile, Tablet, Desktop" 
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
+                <Input 
+                  name="domainTargeting" 
+                  value={newProfile.domainTargeting} 
+                  onChange={handleInputChange} 
+                  placeholder="Social media, News, Entertainment" 
+                />
+              </div>
+              <div>
                 <label className="text-sm font-medium mb-1 block">Description</label>
                 <Textarea 
                   name="description" 
@@ -229,7 +277,8 @@ const Profiles = () => {
                 <TableHead>Name</TableHead>
                 <TableHead>Segment</TableHead>
                 <TableHead>Age Range</TableHead>
-                <TableHead>Interests</TableHead>
+                <TableHead>Day/Time Parting</TableHead>
+                <TableHead>Geography</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -239,7 +288,8 @@ const Profiles = () => {
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>{profile.segment}</TableCell>
                   <TableCell>{profile.ageRange}</TableCell>
-                  <TableCell className="max-w-xs truncate">{profile.interests}</TableCell>
+                  <TableCell>{profile.dayTimeparting}</TableCell>
+                  <TableCell>{profile.geographyRegion}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => openEditSheet(profile)}>
@@ -258,7 +308,7 @@ const Profiles = () => {
       </Card>
 
       <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <SheetContent>
+        <SheetContent className="overflow-y-auto">
           {currentProfile && (
             <>
               <SheetHeader>
@@ -297,6 +347,38 @@ const Profiles = () => {
                   <Input 
                     name="interests" 
                     value={currentProfile.interests} 
+                    onChange={handleEditChange} 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
+                  <Input 
+                    name="dayTimeparting" 
+                    value={currentProfile.dayTimeparting} 
+                    onChange={handleEditChange} 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Geography Region</label>
+                  <Input 
+                    name="geographyRegion" 
+                    value={currentProfile.geographyRegion} 
+                    onChange={handleEditChange} 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Device Specifications</label>
+                  <Input 
+                    name="deviceSpecs" 
+                    value={currentProfile.deviceSpecs} 
+                    onChange={handleEditChange} 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
+                  <Input 
+                    name="domainTargeting" 
+                    value={currentProfile.domainTargeting} 
                     onChange={handleEditChange} 
                   />
                 </div>

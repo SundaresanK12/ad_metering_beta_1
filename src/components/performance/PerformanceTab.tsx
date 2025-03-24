@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, BarChart, DollarSign } from 'lucide-react';
+import { TrendingUp, BarChart, Activity } from 'lucide-react';
 import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
 
 interface PerformanceTabProps {
@@ -45,7 +45,7 @@ const PerformanceTab: React.FC<PerformanceTabProps> = ({ selectedProfiles }) => 
             <div className="bg-card rounded-lg p-4 border">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium">Conversion Rate</h3>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <Activity className="h-4 w-4 text-muted-foreground" />
               </div>
               <p className="text-2xl font-bold mt-2">1.8%</p>
               <p className="text-xs text-muted-foreground mt-1">+0.3% from last month</p>

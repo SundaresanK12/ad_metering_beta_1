@@ -18,15 +18,13 @@ interface CampaignListProps {
   profiles: CustomerProfile[];
   openEditSheet: (campaign: any) => void;
   handleDeleteCampaign: (id: number) => void;
-  getProfileNameById: (profileId: string) => string;
 }
 
 const CampaignList: React.FC<CampaignListProps> = ({
   campaigns,
   profiles,
   openEditSheet,
-  handleDeleteCampaign,
-  getProfileNameById
+  handleDeleteCampaign
 }) => {
   return (
     <Table>
@@ -37,7 +35,6 @@ const CampaignList: React.FC<CampaignListProps> = ({
           <TableHead>Status</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>
-          <TableHead>Target Profiles</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -57,19 +54,6 @@ const CampaignList: React.FC<CampaignListProps> = ({
             </TableCell>
             <TableCell>{campaign.startDate}</TableCell>
             <TableCell>{campaign.endDate}</TableCell>
-            <TableCell>
-              {campaign.targetProfiles && campaign.targetProfiles.length > 0 ? (
-                <div className="flex flex-wrap gap-1">
-                  {campaign.targetProfiles.map((profileId: string) => (
-                    <span key={profileId} className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {getProfileNameById(profileId)}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span className="text-gray-400 text-xs">No profiles targeted</span>
-              )}
-            </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
                 <Button variant="outline" size="icon" onClick={() => openEditSheet(campaign)}>

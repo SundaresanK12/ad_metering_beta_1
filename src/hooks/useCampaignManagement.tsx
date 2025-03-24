@@ -5,10 +5,10 @@ import profileService, { CustomerProfile } from '@/services/profileService';
 
 // Mock data for campaigns
 const initialCampaigns = [
-  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans', targetProfiles: [] },
-  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release', targetProfiles: [] },
-  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday', targetProfiles: [] },
-  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season', targetProfiles: [] },
+  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
+  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
+  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
+  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
 ];
 
 export const useCampaignManagement = () => {
@@ -32,8 +32,7 @@ export const useCampaignManagement = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: '',
-      targetProfiles: []
+      description: ''
     };
   });
 
@@ -86,8 +85,7 @@ export const useCampaignManagement = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: '',
-      targetProfiles: []
+      description: ''
     });
     setIsAddOpen(false);
     toast.success('Campaign created successfully');
@@ -121,45 +119,6 @@ export const useCampaignManagement = () => {
     setCurrentCampaign({ ...currentCampaign, [name]: value });
   };
 
-  const handleProfileSelect = (profileId: string) => {
-    // Check if already selected
-    if (newCampaign.targetProfiles.includes(profileId)) {
-      setNewCampaign({
-        ...newCampaign,
-        targetProfiles: newCampaign.targetProfiles.filter((id: string) => id !== profileId)
-      });
-    } else {
-      setNewCampaign({
-        ...newCampaign,
-        targetProfiles: [...newCampaign.targetProfiles, profileId]
-      });
-    }
-  };
-
-  const handleEditProfileSelect = (profileId: string) => {
-    // Ensure targetProfiles exists in currentCampaign
-    const currentTargetProfiles = currentCampaign.targetProfiles || [];
-    
-    // Check if already selected
-    if (currentTargetProfiles.includes(profileId)) {
-      setCurrentCampaign({
-        ...currentCampaign,
-        targetProfiles: currentTargetProfiles.filter((id: string) => id !== profileId)
-      });
-    } else {
-      setCurrentCampaign({
-        ...currentCampaign,
-        targetProfiles: [...currentTargetProfiles, profileId]
-      });
-    }
-  };
-
-  // Find profile names for display
-  const getProfileNameById = (profileId: string) => {
-    const profile = profiles.find(p => p.id === profileId);
-    return profile ? profile.name : 'Unknown Profile';
-  };
-
   return {
     campaigns: filteredCampaigns,
     searchTerm,
@@ -176,9 +135,6 @@ export const useCampaignManagement = () => {
     handleDeleteCampaign,
     openEditSheet,
     handleInputChange,
-    handleEditChange,
-    handleProfileSelect,
-    handleEditProfileSelect,
-    getProfileNameById
+    handleEditChange
   };
 };

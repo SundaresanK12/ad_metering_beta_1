@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Wallet, CreditCard } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart, Activity } from 'lucide-react';
 
 interface RevenuePerformanceCardProps {
   brand: string;
@@ -25,7 +25,7 @@ const RevenuePerformanceCard: React.FC<RevenuePerformanceCardProps> = ({
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <span className="text-xs flex items-center gap-1 text-muted-foreground">
-              <Wallet className="h-3 w-3" /> Revenue
+              <Activity className="h-3 w-3" /> New Creatives
             </span>
             <div className="flex items-center">
               {revenue > 0 ? (
@@ -44,7 +44,7 @@ const RevenuePerformanceCard: React.FC<RevenuePerformanceCardProps> = ({
           
           <div className="space-y-1">
             <span className="text-xs flex items-center gap-1 text-muted-foreground">
-              <CreditCard className="h-3 w-3" /> Ad Spend
+              <BarChart className="h-3 w-3" /> Ads Impression
             </span>
             <div className="flex items-center">
               {spend > 0 ? (
