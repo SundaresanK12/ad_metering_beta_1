@@ -36,6 +36,25 @@ import {
   User
 } from 'lucide-react';
 import MainNavigation from '@/components/MainNavigation';
+import MultiSelectField from '@/components/profiles/MultiSelectField';
+
+// Predefined options for dropdown fields
+const TIME_PARTING_OPTIONS = [
+  'Morning', 'Afternoon', 'Evening', 'Night',
+  'Weekdays', 'Weekends', 'Business Hours', 'After Hours'
+];
+
+const GEOGRAPHY_OPTIONS = [
+  'Urban Areas', 'Suburban Areas', 'Rural Areas',
+  'Major Cities', 'Business Districts', 'Residential Areas',
+  'East Coast', 'West Coast', 'Midwest', 'South',
+  'International'
+];
+
+const DEVICE_OPTIONS = [
+  'Mobile Phones', 'Tablets', 'Desktops', 'Laptops',
+  'iOS Devices', 'Android Devices', 'Smart TVs', 'Gaming Consoles'
+];
 
 interface Profile {
   id: number;
@@ -44,17 +63,17 @@ interface Profile {
   ageRange: string;
   interests: string;
   description: string;
-  dayTimeparting: string;
-  geographyRegion: string;
-  deviceSpecs: string;
+  dayTimeparting: string[];
+  geographyRegion: string[];
+  deviceSpecs: string[];
   domainTargeting: string;
 }
 
 const initialProfiles: Profile[] = [
-  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy', dayTimeparting: 'Evenings, Weekends', geographyRegion: 'Urban areas, Major cities', deviceSpecs: 'Mobile devices, High-end phones', domainTargeting: 'Social media, Entertainment, Gaming' },
-  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service', dayTimeparting: 'Mornings, Evenings', geographyRegion: 'Suburban areas', deviceSpecs: 'Various devices, Tablets', domainTargeting: 'Family content, Education, Shopping' },
-  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value', dayTimeparting: 'Morning, Afternoon', geographyRegion: 'Rural, Suburban', deviceSpecs: 'Basic smartphones, Desktop', domainTargeting: 'News, Health, Travel' },
-  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service', dayTimeparting: 'Business hours', geographyRegion: 'Business districts', deviceSpecs: 'Business devices, Laptops', domainTargeting: 'Business, Finance, Productivity' },
+  { id: 1, name: 'Urban Youth', segment: 'Youth', ageRange: '18-25', interests: 'Social media, gaming, streaming', description: 'Young urban professionals who are tech-savvy', dayTimeparting: ['Evenings', 'Weekends'], geographyRegion: ['Urban areas', 'Major cities'], deviceSpecs: ['Mobile devices', 'High-end phones'], domainTargeting: 'Social media, Entertainment, Gaming' },
+  { id: 2, name: 'Family Premium', segment: 'Family', ageRange: '30-45', interests: 'Family plans, data sharing, security', description: 'Families looking for premium reliable service', dayTimeparting: ['Mornings', 'Evenings'], geographyRegion: ['Suburban areas'], deviceSpecs: ['Various devices', 'Tablets'], domainTargeting: 'Family content, Education, Shopping' },
+  { id: 3, name: 'Senior Value', segment: 'Senior', ageRange: '60+', interests: 'Reliability, customer service, value', description: 'Seniors looking for simple plans with good value', dayTimeparting: ['Morning', 'Afternoon'], geographyRegion: ['Rural', 'Suburban'], deviceSpecs: ['Basic smartphones', 'Desktop'], domainTargeting: 'News, Health, Travel' },
+  { id: 4, name: 'Business Small', segment: 'Business', ageRange: '25-55', interests: 'Reliability, customer service, data plans', description: 'Small business owners needing reliable service', dayTimeparting: ['Business hours'], geographyRegion: ['Business districts'], deviceSpecs: ['Business devices', 'Laptops'], domainTargeting: 'Business, Finance, Productivity' },
 ];
 
 const Profiles = () => {
@@ -70,9 +89,9 @@ const Profiles = () => {
     ageRange: '',
     interests: '',
     description: '',
-    dayTimeparting: '',
-    geographyRegion: '',
-    deviceSpecs: '',
+    dayTimeparting: [],
+    geographyRegion: [],
+    deviceSpecs: [],
     domainTargeting: ''
   });
 
@@ -94,9 +113,9 @@ const Profiles = () => {
       ageRange: '',
       interests: '',
       description: '',
-      dayTimeparting: '',
-      geographyRegion: '',
-      deviceSpecs: '',
+      dayTimeparting: [],
+      geographyRegion: [],
+      deviceSpecs: [],
       domainTargeting: ''
     });
     setIsAddOpen(false);
@@ -133,12 +152,22 @@ const Profiles = () => {
     }
   };
 
+  const handleMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs'>, values: string[]) => {
+    setNewProfile({ ...newProfile, [field]: values });
+  };
+
+  const handleEditMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs'>, values: string[]) => {
+    if (currentProfile) {
+      setCurrentProfile({ ...currentProfile, [field]: values });
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <MainNavigation />
       
       <div className="flex items-center mb-6">
-        <h1 className="text-3xl font-bold">Customer Profiles</h1>
+        <h1 className="text-3xl font-bold">Profiles</h1>
       </div>
 
       <div className="flex justify-between items-center mb-6">
@@ -165,7 +194,7 @@ const Profiles = () => {
             <SheetHeader>
               <SheetTitle>Create New Profile</SheetTitle>
               <SheetDescription>
-                Add details for your new customer profile
+                Add details for your new profile
               </SheetDescription>
             </SheetHeader>
             <div className="space-y-4 mt-6">
@@ -207,29 +236,29 @@ const Profiles = () => {
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
-                <Input 
-                  name="dayTimeparting" 
-                  value={newProfile.dayTimeparting} 
-                  onChange={handleInputChange} 
-                  placeholder="Evenings, Weekends, Business hours" 
+                <MultiSelectField
+                  options={TIME_PARTING_OPTIONS}
+                  selectedValues={newProfile.dayTimeparting}
+                  onChange={(values) => handleMultiSelectChange('dayTimeparting', values)}
+                  placeholder="Select time periods"
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Geography Region</label>
-                <Input 
-                  name="geographyRegion" 
-                  value={newProfile.geographyRegion} 
-                  onChange={handleInputChange} 
-                  placeholder="Urban areas, Suburban, Rural" 
+                <MultiSelectField
+                  options={GEOGRAPHY_OPTIONS}
+                  selectedValues={newProfile.geographyRegion}
+                  onChange={(values) => handleMultiSelectChange('geographyRegion', values)}
+                  placeholder="Select regions"
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Device Specifications</label>
-                <Input 
-                  name="deviceSpecs" 
-                  value={newProfile.deviceSpecs} 
-                  onChange={handleInputChange} 
-                  placeholder="Mobile, Tablet, Desktop" 
+                <MultiSelectField
+                  options={DEVICE_OPTIONS}
+                  selectedValues={newProfile.deviceSpecs}
+                  onChange={(values) => handleMultiSelectChange('deviceSpecs', values)}
+                  placeholder="Select devices"
                 />
               </div>
               <div>
@@ -247,7 +276,7 @@ const Profiles = () => {
                   name="description" 
                   value={newProfile.description} 
                   onChange={handleInputChange} 
-                  placeholder="Describe the customer profile characteristics"
+                  placeholder="Describe the profile characteristics"
                   rows={3}
                 />
               </div>
@@ -263,7 +292,7 @@ const Profiles = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Customer Profiles
+            Profiles
           </CardTitle>
           <CardDescription>
             Manage target audience profiles for your marketing campaigns and experiments
@@ -271,7 +300,7 @@ const Profiles = () => {
         </CardHeader>
         <CardContent>
           <Table>
-            <TableCaption>A list of your customer profiles</TableCaption>
+            <TableCaption>A list of your profiles</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -288,8 +317,8 @@ const Profiles = () => {
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>{profile.segment}</TableCell>
                   <TableCell>{profile.ageRange}</TableCell>
-                  <TableCell>{profile.dayTimeparting}</TableCell>
-                  <TableCell>{profile.geographyRegion}</TableCell>
+                  <TableCell>{profile.dayTimeparting.join(', ')}</TableCell>
+                  <TableCell>{profile.geographyRegion.join(', ')}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => openEditSheet(profile)}>
@@ -314,7 +343,7 @@ const Profiles = () => {
               <SheetHeader>
                 <SheetTitle>Edit Profile</SheetTitle>
                 <SheetDescription>
-                  Update the details for your customer profile
+                  Update the details for your profile
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-4 mt-6">
@@ -352,26 +381,29 @@ const Profiles = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
-                  <Input 
-                    name="dayTimeparting" 
-                    value={currentProfile.dayTimeparting} 
-                    onChange={handleEditChange} 
+                  <MultiSelectField
+                    options={TIME_PARTING_OPTIONS}
+                    selectedValues={currentProfile.dayTimeparting}
+                    onChange={(values) => handleEditMultiSelectChange('dayTimeparting', values)}
+                    placeholder="Select time periods"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1 block">Geography Region</label>
-                  <Input 
-                    name="geographyRegion" 
-                    value={currentProfile.geographyRegion} 
-                    onChange={handleEditChange} 
+                  <MultiSelectField
+                    options={GEOGRAPHY_OPTIONS}
+                    selectedValues={currentProfile.geographyRegion}
+                    onChange={(values) => handleEditMultiSelectChange('geographyRegion', values)}
+                    placeholder="Select regions"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1 block">Device Specifications</label>
-                  <Input 
-                    name="deviceSpecs" 
-                    value={currentProfile.deviceSpecs} 
-                    onChange={handleEditChange} 
+                  <MultiSelectField
+                    options={DEVICE_OPTIONS}
+                    selectedValues={currentProfile.deviceSpecs}
+                    onChange={(values) => handleEditMultiSelectChange('deviceSpecs', values)}
+                    placeholder="Select devices"
                   />
                 </div>
                 <div>
