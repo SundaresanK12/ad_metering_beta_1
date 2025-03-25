@@ -31,8 +31,8 @@ interface MultiSelectProps {
 }
 
 const MultiSelectField: React.FC<MultiSelectProps> = ({
-  options,
-  selectedValues = [], // Provide a default empty array to prevent undefined
+  options = [], // Ensure options is always an array
+  selectedValues = [], // Ensure selectedValues is always an array
   onChange,
   placeholder,
   allowCustomOption = false,
@@ -43,7 +43,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   const [open, setOpen] = useState(false);
   const [customOption, setCustomOption] = useState('');
   
-  // Ensure selectedValues is always an array
+  // Ensure values is always an array, never undefined
   const values = Array.isArray(selectedValues) ? selectedValues : [];
 
   // Initialize with default option if provided and no values exist
@@ -51,7 +51,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
     if (defaultOption && values.length === 0) {
       onChange([defaultOption]);
     }
-  }, [defaultOption]);
+  }, [defaultOption, onChange, values.length]);
 
   const handleSelect = (value: string) => {
     const selected = values.includes(value)
@@ -91,6 +91,9 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
       setCustomOption('');
     }
   }, [open]);
+
+  // Make sure we always have valid options to display
+  const safeOptions = Array.isArray(options) ? options : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -133,7 +136,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
             {useCheckboxes ? (
               // Checkbox version
               <div className="p-2 space-y-2">
-                {options.map((option) => (
+                {safeOptions.map((option) => (
                   <div 
                     key={option} 
                     className="flex items-center space-x-2"
@@ -158,7 +161,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
               </div>
             ) : (
               // Regular CommandItem version
-              options.map((option) => (
+              safeOptions.map((option) => (
                 <CommandItem
                   key={option}
                   value={option}

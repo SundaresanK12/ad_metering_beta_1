@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -73,6 +73,7 @@ interface CampaignFormProps {
     startDate: string;
     endDate: string;
     description: string;
+    profileId?: string;
   };
   profiles: Array<any>;
   profileSettings?: {
@@ -98,15 +99,34 @@ interface CampaignFormProps {
 const CampaignForm: React.FC<CampaignFormProps> = ({
   campaign,
   profiles,
-  profileSettings,
+  profileSettings = {
+    name: '',
+    segment: '',
+    ageRange: '',
+    interests: '',
+    description: '',
+    dayTimeparting: [],
+    geographyRegion: [],
+    deviceSpecs: [],
+    domainTargeting: []
+  },
   handleInputChange,
-  handleProfileInputChange,
-  handleProfileMultiSelectChange,
+  handleProfileInputChange = () => {},
+  handleProfileMultiSelectChange = () => {},
   handleSubmit,
   submitButtonText,
   createProfileEnabled = false,
-  setCreateProfileEnabled
+  setCreateProfileEnabled = () => {}
 }) => {
+  // Ensure all array fields have default values
+  const safeProfileSettings = {
+    ...profileSettings,
+    dayTimeparting: profileSettings.dayTimeparting || [],
+    geographyRegion: profileSettings.geographyRegion || [],
+    deviceSpecs: profileSettings.deviceSpecs || [],
+    domainTargeting: profileSettings.domainTargeting || []
+  };
+
   return (
     <div className="space-y-4 mt-6">
       <div>
@@ -191,7 +211,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Profile Name</label>
                 <Input 
                   name="name" 
-                  value={profileSettings.name} 
+                  value={safeProfileSettings.name} 
                   onChange={handleProfileInputChange} 
                   placeholder="Urban Youth" 
                 />
@@ -200,7 +220,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Segment</label>
                 <Input 
                   name="segment" 
-                  value={profileSettings.segment} 
+                  value={safeProfileSettings.segment} 
                   onChange={handleProfileInputChange} 
                   placeholder="Youth, Family, Senior, Business" 
                 />
@@ -209,7 +229,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Age Range</label>
                 <Input 
                   name="ageRange" 
-                  value={profileSettings.ageRange} 
+                  value={safeProfileSettings.ageRange} 
                   onChange={handleProfileInputChange} 
                   placeholder="18-25, 30-45, etc." 
                 />
@@ -218,7 +238,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Interests</label>
                 <Input 
                   name="interests" 
-                  value={profileSettings.interests} 
+                  value={safeProfileSettings.interests} 
                   onChange={handleProfileInputChange} 
                   placeholder="Social media, family plans, etc." 
                 />
@@ -227,7 +247,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
                 <MultiSelectField
                   options={TIME_PARTING_OPTIONS}
-                  selectedValues={profileSettings.dayTimeparting || []} 
+                  selectedValues={safeProfileSettings.dayTimeparting} 
                   onChange={(values) => handleProfileMultiSelectChange('dayTimeparting', values)}
                   placeholder="Select time periods"
                   defaultOption="Weekdays"
@@ -237,7 +257,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Geography Region</label>
                 <MultiSelectField
                   options={FLAT_GEOGRAPHY_OPTIONS}
-                  selectedValues={profileSettings.geographyRegion || []} 
+                  selectedValues={safeProfileSettings.geographyRegion} 
                   onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
                   placeholder="Select regions"
                   defaultOption="North America"
@@ -248,7 +268,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Device Specifications</label>
                 <MultiSelectField
                   options={DEVICE_OPTIONS}
-                  selectedValues={profileSettings.deviceSpecs || []} 
+                  selectedValues={safeProfileSettings.deviceSpecs} 
                   onChange={(values) => handleProfileMultiSelectChange('deviceSpecs', values)}
                   placeholder="Select devices"
                   defaultOption="Mobile Phones"
@@ -258,7 +278,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
                 <MultiSelectField
                   options={DOMAIN_OPTIONS}
-                  selectedValues={profileSettings.domainTargeting || []} 
+                  selectedValues={safeProfileSettings.domainTargeting} 
                   onChange={(values) => handleProfileMultiSelectChange('domainTargeting', values)}
                   placeholder="Select domains"
                   useCheckboxes={true}
@@ -270,7 +290,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
                 <label className="text-sm font-medium mb-1 block">Profile Description</label>
                 <Textarea 
                   name="description" 
-                  value={profileSettings.description} 
+                  value={safeProfileSettings.description} 
                   onChange={handleProfileInputChange} 
                   placeholder="Describe the profile characteristics"
                   rows={3}
@@ -284,7 +304,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               name="profileId"
               onChange={handleInputChange}
-              defaultValue=""
+              value={campaign.profileId || ""}
             >
               <option value="" disabled>Select a profile</option>
               {profiles.map((profile) => (
