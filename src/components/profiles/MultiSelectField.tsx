@@ -9,6 +9,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -131,54 +132,56 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
       <PopoverContent className="w-[300px] p-0">
         <Command>
           <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
-          <CommandEmpty>No options found.</CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-auto">
-            {useCheckboxes ? (
-              // Checkbox version
-              <div className="p-2 space-y-2">
-                {safeOptions.map((option) => (
-                  <div 
-                    key={option} 
-                    className="flex items-center space-x-2"
-                    style={{ 
-                      paddingLeft: hierarchical ? `${getIndentation(option) * 12}px` : '0'
-                    }}
-                  >
-                    <Checkbox 
-                      id={`option-${option}`}
-                      checked={values.includes(option)}
-                      onCheckedChange={() => handleSelect(option)}
-                    />
-                    <label 
-                      htmlFor={`option-${option}`}
-                      className="text-sm cursor-pointer flex-1"
-                      onClick={() => handleSelect(option)}
+          <CommandList>
+            <CommandEmpty>No options found.</CommandEmpty>
+            <CommandGroup className="max-h-60 overflow-auto">
+              {useCheckboxes ? (
+                // Checkbox version
+                <div className="p-2 space-y-2">
+                  {safeOptions.map((option) => (
+                    <div 
+                      key={option} 
+                      className="flex items-center space-x-2"
+                      style={{ 
+                        paddingLeft: hierarchical ? `${getIndentation(option) * 12}px` : '0'
+                      }}
                     >
-                      {hierarchical ? getDisplayName(option) : option}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              // Regular CommandItem version
-              safeOptions.map((option) => (
-                <CommandItem
-                  key={option}
-                  value={option}
-                  onSelect={() => handleSelect(option)}
-                  className={hierarchical ? `pl-${getIndentation(option) * 4 + 2}` : ''}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      values.includes(option) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {hierarchical ? getDisplayName(option) : option}
-                </CommandItem>
-              ))
-            )}
-          </CommandGroup>
+                      <Checkbox 
+                        id={`option-${option}`}
+                        checked={values.includes(option)}
+                        onCheckedChange={() => handleSelect(option)}
+                      />
+                      <label 
+                        htmlFor={`option-${option}`}
+                        className="text-sm cursor-pointer flex-1"
+                        onClick={() => handleSelect(option)}
+                      >
+                        {hierarchical ? getDisplayName(option) : option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                // Regular CommandItem version
+                safeOptions.map((option) => (
+                  <CommandItem
+                    key={option}
+                    value={option}
+                    onSelect={() => handleSelect(option)}
+                    className={hierarchical ? `pl-${getIndentation(option) * 4 + 2}` : ''}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        values.includes(option) ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {hierarchical ? getDisplayName(option) : option}
+                  </CommandItem>
+                ))
+              )}
+            </CommandGroup>
+          </CommandList>
           
           {allowCustomOption && (
             <div className="border-t p-2 flex gap-2">
