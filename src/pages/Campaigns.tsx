@@ -29,7 +29,10 @@ const Campaigns = () => {
     isEditOpen,
     currentCampaign,
     newCampaign,
+    newProfile,
     profiles,
+    createProfileEnabled,
+    setCreateProfileEnabled,
     setIsAddOpen,
     setIsEditOpen,
     handleSearch,
@@ -39,6 +42,8 @@ const Campaigns = () => {
     openEditSheet,
     handleInputChange,
     handleEditChange,
+    handleProfileInputChange,
+    handleProfileMultiSelectChange
   } = useCampaignManagement();
 
   return (
@@ -78,7 +83,7 @@ const Campaigns = () => {
 
       {/* Add Campaign Sheet */}
       <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <SheetContent>
+        <SheetContent className="overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Create New Campaign</SheetTitle>
             <SheetDescription>
@@ -88,16 +93,21 @@ const Campaigns = () => {
           <CampaignForm
             campaign={newCampaign}
             profiles={profiles}
+            profileSettings={newProfile}
             handleInputChange={handleInputChange}
+            handleProfileInputChange={handleProfileInputChange}
+            handleProfileMultiSelectChange={handleProfileMultiSelectChange}
             handleSubmit={handleAddCampaign}
             submitButtonText="Create Campaign"
+            createProfileEnabled={createProfileEnabled}
+            setCreateProfileEnabled={setCreateProfileEnabled}
           />
         </SheetContent>
       </Sheet>
 
       {/* Edit Campaign Sheet */}
       <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <SheetContent>
+        <SheetContent className="overflow-y-auto">
           {currentCampaign && (
             <>
               <SheetHeader>

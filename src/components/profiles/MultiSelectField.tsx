@@ -26,6 +26,8 @@ interface MultiSelectProps {
   placeholder: string;
   allowCustomOption?: boolean;
   useCheckboxes?: boolean;
+  defaultOption?: string;
+  hierarchical?: boolean;
 }
 
 const MultiSelectField: React.FC<MultiSelectProps> = ({
@@ -35,12 +37,21 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   placeholder,
   allowCustomOption = false,
   useCheckboxes = false,
+  defaultOption = "",
+  hierarchical = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [customOption, setCustomOption] = useState('');
   
   // Ensure selectedValues is always an array
   const values = Array.isArray(selectedValues) ? selectedValues : [];
+
+  // Initialize with default option if provided and no values exist
+  useEffect(() => {
+    if (defaultOption && values.length === 0) {
+      onChange([defaultOption]);
+    }
+  }, [defaultOption]);
 
   const handleSelect = (value: string) => {
     const selected = values.includes(value)
@@ -59,6 +70,19 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
       onChange(newValues);
       setCustomOption('');
     }
+  };
+
+  // Get indentation level for hierarchical options
+  const getIndentation = (option: string) => {
+    if (!hierarchical) return 0;
+    return (option.match(/ - /g) || []).length;
+  };
+
+  // Format display name for hierarchical options
+  const getDisplayName = (option: string) => {
+    if (!hierarchical) return option;
+    const parts = option.split(' - ');
+    return parts[parts.length - 1];
   };
 
   // Close popover when clicking outside
@@ -81,7 +105,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
             {values.length > 0 ? (
               values.map((value) => (
                 <Badge key={value} className="mr-1 mb-1">
-                  {value}
+                  {hierarchical ? getDisplayName(value) : value}
                   <button
                     type="button"
                     className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-ring"
@@ -110,7 +134,13 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
               // Checkbox version
               <div className="p-2 space-y-2">
                 {options.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
+                  <div 
+                    key={option} 
+                    className="flex items-center space-x-2"
+                    style={{ 
+                      paddingLeft: hierarchical ? `${getIndentation(option) * 12}px` : '0'
+                    }}
+                  >
                     <Checkbox 
                       id={`option-${option}`}
                       checked={values.includes(option)}
@@ -121,7 +151,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                       className="text-sm cursor-pointer flex-1"
                       onClick={() => handleSelect(option)}
                     >
-                      {option}
+                      {hierarchical ? getDisplayName(option) : option}
                     </label>
                   </div>
                 ))}
@@ -133,6 +163,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                   key={option}
                   value={option}
                   onSelect={() => handleSelect(option)}
+                  className={hierarchical ? `pl-${getIndentation(option) * 4 + 2}` : ''}
                 >
                   <Check
                     className={cn(
@@ -140,7 +171,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                       values.includes(option) ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {option}
+                  {hierarchical ? getDisplayName(option) : option}
                 </CommandItem>
               ))
             )}

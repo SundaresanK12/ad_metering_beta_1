@@ -5,10 +5,10 @@ import profileService from '@/services/profileService';
 
 // Mock data for campaigns
 const initialCampaigns = [
-  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans' },
-  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release' },
-  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday' },
-  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season' },
+  { id: 1, name: 'Summer Promotion', status: 'Active', startDate: '2023-06-01', endDate: '2023-08-31', description: 'Summer discount campaign for all cellular plans', profileId: 1 },
+  { id: 2, name: 'New iPhone Launch', status: 'Planning', startDate: '2023-09-15', endDate: '2023-10-15', description: 'Campaign for the latest iPhone release', profileId: 2 },
+  { id: 3, name: 'Black Friday Deals', status: 'Scheduled', startDate: '2023-11-20', endDate: '2023-11-30', description: 'Special offers for Black Friday', profileId: 3 },
+  { id: 4, name: 'Holiday Bundle', status: 'Active', startDate: '2023-12-01', endDate: '2023-12-31', description: 'Family plan discounts for the holiday season', profileId: 4 },
 ];
 
 export const useCampaignManagement = () => {
@@ -23,6 +23,7 @@ export const useCampaignManagement = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [currentCampaign, setCurrentCampaign] = useState<any>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [createProfileEnabled, setCreateProfileEnabled] = useState(false);
   
   const [newCampaign, setNewCampaign] = useState(() => {
     // Try to get new campaign data from sessionStorage
@@ -32,8 +33,21 @@ export const useCampaignManagement = () => {
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: ''
+      description: '',
+      profileId: ''
     };
+  });
+  
+  const [newProfile, setNewProfile] = useState({
+    name: '',
+    segment: '',
+    ageRange: '',
+    interests: '',
+    description: '',
+    dayTimeparting: [],
+    geographyRegion: [],
+    deviceSpecs: [],
+    domainTargeting: []
   });
 
   // Save campaigns to sessionStorage whenever it changes
@@ -77,16 +91,57 @@ export const useCampaignManagement = () => {
     campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddCampaign = () => {
+  const handleAddCampaign = async () => {
     const id = Math.max(...campaigns.map(c => c.id), 0) + 1;
-    setCampaigns([...campaigns, { id, ...newCampaign }]);
+    let profileId = newCampaign.profileId;
+    
+    // If creating a new profile with the campaign
+    if (createProfileEnabled) {
+      try {
+        // Simulate profile creation
+        const profileId = Math.max(...profiles.map(p => p.id), 0) + 1;
+        const newProfileWithId = { id: profileId, ...newProfile };
+        
+        // Update profiles state
+        setProfiles([...profiles, newProfileWithId]);
+        
+        // Update profileId in campaign
+        profileId = profileId;
+        
+        toast.success('Profile created successfully');
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        toast.error("Failed to create profile");
+        return;
+      }
+    }
+    
+    // Create campaign
+    setCampaigns([...campaigns, { id, ...newCampaign, profileId }]);
+    
+    // Reset states
     setNewCampaign({
       name: '',
       status: 'Planning',
       startDate: '',
       endDate: '',
-      description: ''
+      description: '',
+      profileId: ''
     });
+    
+    setNewProfile({
+      name: '',
+      segment: '',
+      ageRange: '',
+      interests: '',
+      description: '',
+      dayTimeparting: [],
+      geographyRegion: [],
+      deviceSpecs: [],
+      domainTargeting: []
+    });
+    
+    setCreateProfileEnabled(false);
     setIsAddOpen(false);
     toast.success('Campaign created successfully');
   };
@@ -118,6 +173,15 @@ export const useCampaignManagement = () => {
     const { name, value } = e.target;
     setCurrentCampaign({ ...currentCampaign, [name]: value });
   };
+  
+  const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewProfile({ ...newProfile, [name]: value });
+  };
+  
+  const handleProfileMultiSelectChange = (field: string, values: string[]) => {
+    setNewProfile({ ...newProfile, [field]: values });
+  };
 
   return {
     campaigns: filteredCampaigns,
@@ -126,7 +190,10 @@ export const useCampaignManagement = () => {
     isEditOpen,
     currentCampaign,
     newCampaign,
+    newProfile,
     profiles,
+    createProfileEnabled,
+    setCreateProfileEnabled,
     setIsAddOpen,
     setIsEditOpen,
     handleSearch,
@@ -135,6 +202,8 @@ export const useCampaignManagement = () => {
     handleDeleteCampaign,
     openEditSheet,
     handleInputChange,
-    handleEditChange
+    handleEditChange,
+    handleProfileInputChange,
+    handleProfileMultiSelectChange
   };
 };
