@@ -16,7 +16,7 @@ interface CampaignListProps {
   campaigns: any[];
   profiles: any[];
   openEditSheet: (campaign: any) => void;
-  handleDeleteCampaign: (id: string) => void; // Changed from number to string
+  handleDeleteCampaign: (id: string) => void; 
 }
 
 const CampaignList: React.FC<CampaignListProps> = ({

@@ -12,13 +12,15 @@ import {
   BarChart, 
   PieChart, 
   FileText, 
-  Flag
+  Flag,
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import BrandsList from '@/components/BrandsList';
 import BrandStatsCard from '@/components/BrandStatsCard';
 import MarketShareChart from '@/components/MarketShareChart';
 import SpendingTrendsChart from '@/components/SpendingTrendsChart';
-import PerformanceTab from '@/components/performance/PerformanceTab';
+import RevenuePerformanceCard from '@/components/RevenuePerformanceCard';
 import MainNavigation from '@/components/MainNavigation';
 import { cn } from '@/lib/utils';
 import brandService, { BrandData } from '@/services/brandService';
@@ -151,7 +153,7 @@ export default function BrandsAnalytics() {
                   {selectedCampaigns.length ? `${selectedCampaigns.length} Campaigns` : 'Filter by Campaign'}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64 p-3" align="start">
+              <PopoverContent className="w-64 p-3 bg-white" align="start">
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm">Filter by Campaigns</h4>
                   <div className="max-h-48 overflow-y-auto space-y-2">
@@ -186,7 +188,7 @@ export default function BrandsAnalytics() {
         </div>
 
         <Tabs defaultValue="overview" onValueChange={setActiveTab} className="mb-8">
-          <TabsList className="grid w-full grid-cols-3 mb-4 bg-gray-100 p-1">
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-gray-100 p-1">
             <TabsTrigger 
               value="overview" 
               className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
@@ -198,12 +200,6 @@ export default function BrandsAnalytics() {
               className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
             >
               Brands
-            </TabsTrigger>
-            <TabsTrigger 
-              value="performance"
-              className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
-            >
-              Performance
             </TabsTrigger>
           </TabsList>
 
@@ -222,6 +218,69 @@ export default function BrandsAnalytics() {
                 value="1,842"
                 change={-3.7}
                 description="Across all brands"
+              />
+            </div>
+            
+            {/* Performance Metrics Section - Moved from Performance Tab */}
+            <Card className="mb-6 border border-blue-100 shadow-md bg-white">
+              <CardHeader className="border-b border-blue-50 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardTitle className="flex items-center gap-2 text-blue-900">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                  Campaign Performance Metrics
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Performance data across all marketing campaigns
+                  {selectedCampaigns.length > 0 && ` (filtered by ${selectedCampaigns.length} campaigns)`}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-card rounded-lg p-4 border">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium">Impressions</h3>
+                      <BarChart className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-2xl font-bold mt-2">2.4M</p>
+                    <p className="text-xs text-muted-foreground mt-1">+12.4% from last month</p>
+                  </div>
+                  
+                  <div className="bg-card rounded-lg p-4 border">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium">Click-Through Rate</h3>
+                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-2xl font-bold mt-2">3.2%</p>
+                    <p className="text-xs text-muted-foreground mt-1">+0.8% from last month</p>
+                  </div>
+                  
+                  <div className="bg-card rounded-lg p-4 border">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium">Conversion Rate</h3>
+                      <Activity className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-2xl font-bold mt-2">1.8%</p>
+                    <p className="text-xs text-muted-foreground mt-1">+0.3% from last month</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Revenue Performance Cards - Moved from Performance Tab */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <RevenuePerformanceCard
+                brand="Verizon"
+                revenue={+8.4}
+                spend={+10.2}
+              />
+              <RevenuePerformanceCard
+                brand="AT&T"
+                revenue={-2.1}
+                spend={+5.7}
+              />
+              <RevenuePerformanceCard
+                brand="T-Mobile"
+                revenue={+12.3}
+                spend={+15.8}
               />
             </div>
             
@@ -276,10 +335,6 @@ export default function BrandsAnalytics() {
                 <BrandsList brands={filteredBrands} />
               </CardContent>
             </Card>
-          </TabsContent>
-          
-          <TabsContent value="performance">
-            <PerformanceTab selectedProfiles={[]} />
           </TabsContent>
         </Tabs>
       </div>

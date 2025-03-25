@@ -10,7 +10,9 @@ export interface BrandData {
   impressions: string;
   spend: string;
   performance: number;
-  hashKeys: string[];
+  hashKeys?: string[];
+  country?: string;
+  state?: string;
 }
 
 export interface Offer {

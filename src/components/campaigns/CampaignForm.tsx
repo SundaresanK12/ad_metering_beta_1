@@ -224,36 +224,42 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             
             <div>
               <label className="text-sm font-medium mb-1 block text-purple-800">Day/Time Parting</label>
-              <MultiSelectField
-                options={TIME_PARTING_OPTIONS}
-                selectedValues={safeProfileSettings.dayTimeparting} 
-                onChange={(values) => handleProfileMultiSelectChange('dayTimeparting', values)}
-                placeholder="Select time periods"
-                defaultOption="Weekdays"
-              />
+              <div className="relative z-20">
+                <MultiSelectField
+                  options={TIME_PARTING_OPTIONS}
+                  selectedValues={safeProfileSettings.dayTimeparting} 
+                  onChange={(values) => handleProfileMultiSelectChange('dayTimeparting', values)}
+                  placeholder="Select time periods"
+                  defaultOption="Weekdays"
+                />
+              </div>
             </div>
             
             <div>
               <label className="text-sm font-medium mb-1 block text-purple-800">Region</label>
-              <MultiSelectField
-                options={FLAT_REGION_OPTIONS}
-                selectedValues={safeProfileSettings.geographyRegion} 
-                onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
-                placeholder="Select countries and states"
-                hierarchical={true}
-                useCheckboxes={true}
-              />
+              <div className="relative z-10">
+                <MultiSelectField
+                  options={FLAT_REGION_OPTIONS}
+                  selectedValues={safeProfileSettings.geographyRegion} 
+                  onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
+                  placeholder="Select countries and states"
+                  hierarchical={true}
+                  useCheckboxes={true}
+                />
+              </div>
             </div>
             
             <div>
               <label className="text-sm font-medium mb-1 block text-purple-800">Device Specifications</label>
-              <MultiSelectField
-                options={DEVICE_OPTIONS}
-                selectedValues={safeProfileSettings.deviceSpecs} 
-                onChange={(values) => handleProfileMultiSelectChange('deviceSpecs', values)}
-                placeholder="Select devices"
-                defaultOption="Mobile Phones"
-              />
+              <div className="relative z-0">
+                <MultiSelectField
+                  options={DEVICE_OPTIONS}
+                  selectedValues={safeProfileSettings.deviceSpecs} 
+                  onChange={(values) => handleProfileMultiSelectChange('deviceSpecs', values)}
+                  placeholder="Select devices"
+                  defaultOption="Mobile Phones"
+                />
+              </div>
             </div>
             
             <div>

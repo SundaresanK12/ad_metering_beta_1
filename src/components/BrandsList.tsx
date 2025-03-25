@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Link } from 'lucide-react';
 import { BrandData } from '@/services/brandService';
 
@@ -18,7 +17,8 @@ const mockData = [
     impressions: '24.5M',
     spend: '$135.7M',
     performance: 8.7,
-    hashKeys: ['vz-q4-plan', 'vz-unlimited']
+    country: 'United States',
+    state: 'New York'
   },
   {
     id: 2,
@@ -28,7 +28,8 @@ const mockData = [
     impressions: '18.2M',
     spend: '$112.3M',
     performance: -3.2,
-    hashKeys: ['att-fiber', 'att-unlimited']
+    country: 'United States',
+    state: 'Texas'
   },
   {
     id: 3,
@@ -38,7 +39,8 @@ const mockData = [
     impressions: '15.8M',
     spend: '$98.4M',
     performance: 12.5,
-    hashKeys: ['tmobile-5g', 'tmobile-home']
+    country: 'United States',
+    state: 'Washington'
   },
   {
     id: 4,
@@ -48,7 +50,8 @@ const mockData = [
     impressions: '10.3M',
     spend: '$67.8M',
     performance: -1.8,
-    hashKeys: ['sprint-family', 'sprint-deal']
+    country: 'United States',
+    state: 'Kansas'
   },
   {
     id: 5,
@@ -58,7 +61,8 @@ const mockData = [
     impressions: '8.7M',
     spend: '$52.9M',
     performance: 6.3,
-    hashKeys: ['xfinity-byod', 'xfinity-mobile']
+    country: 'United States',
+    state: 'Pennsylvania'
   },
   {
     id: 6,
@@ -68,7 +72,8 @@ const mockData = [
     impressions: '6.5M',
     spend: '$41.2M',
     performance: 4.1,
-    hashKeys: ['cricket-prepaid', 'cricket-unlimited']
+    country: 'United Kingdom',
+    state: 'London'
   },
   {
     id: 7,
@@ -78,7 +83,8 @@ const mockData = [
     impressions: '5.8M',
     spend: '$36.5M',
     performance: -2.7,
-    hashKeys: ['boost-family', 'boost-unlimited']
+    country: 'India',
+    state: 'Maharashtra'
   },
 ];
 
@@ -94,7 +100,8 @@ const BrandsList: React.FC<BrandsListProps> = ({ brands }) => {
             <TableHead>Target URL</TableHead>
             <TableHead>Creatives</TableHead>
             <TableHead>Impressions</TableHead>
-            <TableHead>Hash Keys</TableHead>
+            <TableHead>Country</TableHead>
+            <TableHead>State</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -111,15 +118,8 @@ const BrandsList: React.FC<BrandsListProps> = ({ brands }) => {
               </TableCell>
               <TableCell>{item.adCount}</TableCell>
               <TableCell>{item.impressions}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {item.hashKeys.map((key, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {key}
-                    </Badge>
-                  ))}
-                </div>
-              </TableCell>
+              <TableCell>{item.country || 'N/A'}</TableCell>
+              <TableCell>{item.state || 'N/A'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
