@@ -13,8 +13,8 @@ const initialCampaigns = [
 
 export const useCampaignManagement = () => {
   const [campaigns, setCampaigns] = useState(() => {
-    // Try to get campaigns from sessionStorage
-    const savedCampaigns = sessionStorage.getItem('campaigns');
+    // Try to get campaigns from localStorage instead of sessionStorage
+    const savedCampaigns = localStorage.getItem('campaigns');
     return savedCampaigns ? JSON.parse(savedCampaigns) : initialCampaigns;
   });
   
@@ -23,11 +23,13 @@ export const useCampaignManagement = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [currentCampaign, setCurrentCampaign] = useState<any>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
-  const [createProfileEnabled, setCreateProfileEnabled] = useState(false);
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileData, setFileData] = useState<string[]>([]);
   
   const [newCampaign, setNewCampaign] = useState(() => {
-    // Try to get new campaign data from sessionStorage
-    const savedNewCampaign = sessionStorage.getItem('newCampaign');
+    // Try to get new campaign data from localStorage
+    const savedNewCampaign = localStorage.getItem('newCampaign');
     return savedNewCampaign ? JSON.parse(savedNewCampaign) : {
       name: '',
       status: 'Planning',
@@ -39,31 +41,29 @@ export const useCampaignManagement = () => {
   });
   
   const [newProfile, setNewProfile] = useState({
-    name: '',
-    segment: '',
     ageRange: '',
     interests: '',
     description: '',
     dayTimeparting: [],
     geographyRegion: [],
     deviceSpecs: [],
-    domainTargeting: []
+    fileData: []
   });
 
-  // Save campaigns to sessionStorage whenever it changes
+  // Save campaigns to localStorage whenever it changes
   useEffect(() => {
-    sessionStorage.setItem('campaigns', JSON.stringify(campaigns));
+    localStorage.setItem('campaigns', JSON.stringify(campaigns));
   }, [campaigns]);
 
-  // Save new campaign data to sessionStorage
+  // Save new campaign data to localStorage
   useEffect(() => {
-    sessionStorage.setItem('newCampaign', JSON.stringify(newCampaign));
+    localStorage.setItem('newCampaign', JSON.stringify(newCampaign));
   }, [newCampaign]);
 
-  // Save current campaign data to sessionStorage
+  // Save current campaign data to localStorage
   useEffect(() => {
     if (currentCampaign) {
-      sessionStorage.setItem('currentCampaign', JSON.stringify(currentCampaign));
+      localStorage.setItem('currentCampaign', JSON.stringify(currentCampaign));
     }
   }, [currentCampaign]);
 
@@ -93,64 +93,64 @@ export const useCampaignManagement = () => {
 
   const handleAddCampaign = async () => {
     const id = Math.max(...campaigns.map(c => c.id), 0) + 1;
-    let profileId = newCampaign.profileId;
     
-    // If creating a new profile with the campaign
-    if (createProfileEnabled) {
-      try {
-        // Simulate profile creation
-        const newProfileId = Math.max(...profiles.map(p => p.id), 0) + 1;
-        const newProfileWithId = { id: newProfileId, ...newProfile };
-        
-        // Update profiles state
-        setProfiles([...profiles, newProfileWithId]);
-        
-        // Update profileId in campaign with the newly created profile's id
-        profileId = newProfileId;
-        
-        toast.success('Profile created successfully');
-      } catch (error) {
-        console.error("Error creating profile:", error);
-        toast.error("Failed to create profile");
-        return;
-      }
+    // Create a new profile with the campaign
+    try {
+      // Simulate profile creation
+      const newProfileId = Math.max(...profiles.map(p => p.id), 0) + 1;
+      const newProfileWithId = { 
+        id: newProfileId, 
+        name: `Profile for ${newCampaign.name}`,
+        segment: 'Auto-generated',
+        ...newProfile,
+        fileData 
+      };
+      
+      // Update profiles state
+      setProfiles([...profiles, newProfileWithId]);
+      
+      // Create campaign with the new profile ID
+      setCampaigns([...campaigns, { 
+        id, 
+        ...newCampaign, 
+        profileId: newProfileId 
+      }]);
+      
+      // Reset states
+      setNewCampaign({
+        name: '',
+        status: 'Planning',
+        startDate: '',
+        endDate: '',
+        description: '',
+        profileId: ''
+      });
+      
+      setNewProfile({
+        ageRange: '',
+        interests: '',
+        description: '',
+        dayTimeparting: [],
+        geographyRegion: [],
+        deviceSpecs: [],
+        fileData: []
+      });
+      
+      setSelectedFile(null);
+      setFileData([]);
+      setIsAddOpen(false);
+      toast.success('Campaign created successfully');
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      toast.error("Failed to create campaign");
     }
-    
-    // Create campaign
-    setCampaigns([...campaigns, { id, ...newCampaign, profileId }]);
-    
-    // Reset states
-    setNewCampaign({
-      name: '',
-      status: 'Planning',
-      startDate: '',
-      endDate: '',
-      description: '',
-      profileId: ''
-    });
-    
-    setNewProfile({
-      name: '',
-      segment: '',
-      ageRange: '',
-      interests: '',
-      description: '',
-      dayTimeparting: [],
-      geographyRegion: [],
-      deviceSpecs: [],
-      domainTargeting: []
-    });
-    
-    setCreateProfileEnabled(false);
-    setIsAddOpen(false);
-    toast.success('Campaign created successfully');
   };
 
   const handleEditCampaign = () => {
     setCampaigns(campaigns.map(c => c.id === currentCampaign.id ? currentCampaign : c));
     setIsEditOpen(false);
-    // Remove the current campaign from session storage after successful edit
-    sessionStorage.removeItem('currentCampaign');
+    // Remove the current campaign from localStorage after successful edit
+    localStorage.removeItem('currentCampaign');
     toast.success('Campaign updated successfully');
   };
 
@@ -183,6 +183,11 @@ export const useCampaignManagement = () => {
     setNewProfile({ ...newProfile, [field]: values });
   };
 
+  const handleFileSelect = (file: File, data: string[]) => {
+    setSelectedFile(file);
+    setFileData(data);
+  };
+
   return {
     campaigns: filteredCampaigns,
     searchTerm,
@@ -192,8 +197,8 @@ export const useCampaignManagement = () => {
     newCampaign,
     newProfile,
     profiles,
-    createProfileEnabled,
-    setCreateProfileEnabled,
+    selectedFile,
+    fileData,
     setIsAddOpen,
     setIsEditOpen,
     handleSearch,
@@ -204,6 +209,7 @@ export const useCampaignManagement = () => {
     handleInputChange,
     handleEditChange,
     handleProfileInputChange,
-    handleProfileMultiSelectChange
+    handleProfileMultiSelectChange,
+    handleFileSelect
   };
 };

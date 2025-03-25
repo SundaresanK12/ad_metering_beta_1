@@ -3,9 +3,11 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from '@/components/ui/card';
 import MultiSelectField from '@/components/profiles/MultiSelectField';
+import FileUploader from '@/components/campaigns/FileUploader';
+import TextFilePreview from '@/components/campaigns/TextFilePreview';
 
 // Predefined options for dropdown fields
 const TIME_PARTING_OPTIONS = [
@@ -60,12 +62,6 @@ const DEVICE_OPTIONS = [
   'iOS Devices', 'Android Devices', 'Smart TVs', 'Gaming Consoles'
 ];
 
-const DOMAIN_OPTIONS = [
-  'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com',
-  'google.com', 'youtube.com', 'tiktok.com', 'pinterest.com',
-  'snapchat.com', 'reddit.com', 'amazon.com', 'netflix.com'
-];
-
 interface CampaignFormProps {
   campaign: {
     name: string;
@@ -73,251 +69,220 @@ interface CampaignFormProps {
     startDate: string;
     endDate: string;
     description: string;
-    profileId?: string;
   };
-  profiles: Array<any>;
   profileSettings?: {
-    name: string;
-    segment: string;
     ageRange: string;
     interests: string;
     description: string;
     dayTimeparting: string[];
     geographyRegion: string[];
     deviceSpecs: string[];
-    domainTargeting: string[];
   };
+  selectedFile: File | null;
+  fileData: string[];
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   handleProfileInputChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleProfileMultiSelectChange?: (field: string, values: string[]) => void;
+  handleFileSelect?: (file: File, data: string[]) => void;
   handleSubmit: () => void;
   submitButtonText: string;
-  createProfileEnabled?: boolean;
-  setCreateProfileEnabled?: (enabled: boolean) => void;
+  isEdit?: boolean;
 }
 
 const CampaignForm: React.FC<CampaignFormProps> = ({
   campaign,
-  profiles,
   profileSettings = {
-    name: '',
-    segment: '',
     ageRange: '',
     interests: '',
     description: '',
     dayTimeparting: [],
     geographyRegion: [],
-    deviceSpecs: [],
-    domainTargeting: []
+    deviceSpecs: []
   },
+  selectedFile,
+  fileData = [],
   handleInputChange,
   handleProfileInputChange = () => {},
   handleProfileMultiSelectChange = () => {},
+  handleFileSelect = () => {},
   handleSubmit,
   submitButtonText,
-  createProfileEnabled = false,
-  setCreateProfileEnabled = () => {}
+  isEdit = false
 }) => {
   // Ensure all array fields have default values
   const safeProfileSettings = {
     ...profileSettings,
     dayTimeparting: profileSettings.dayTimeparting || [],
     geographyRegion: profileSettings.geographyRegion || [],
-    deviceSpecs: profileSettings.deviceSpecs || [],
-    domainTargeting: profileSettings.domainTargeting || []
+    deviceSpecs: profileSettings.deviceSpecs || []
   };
 
   return (
-    <div className="space-y-4 mt-6">
-      <div>
-        <label className="text-sm font-medium mb-1 block">Campaign Name</label>
-        <Input 
-          name="name" 
-          value={campaign.name} 
-          onChange={handleInputChange} 
-          placeholder="Summer Promotion" 
-        />
-      </div>
-      <div>
-        <label className="text-sm font-medium mb-1 block">Status</label>
-        <select 
-          name="status"
-          value={campaign.status}
-          onChange={handleInputChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <option value="Planning">Planning</option>
-          <option value="Scheduled">Scheduled</option>
-          <option value="Active">Active</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium mb-1 block">Start Date</label>
-          <Input 
-            type="date"
-            name="startDate" 
-            value={campaign.startDate} 
-            onChange={handleInputChange} 
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium mb-1 block">End Date</label>
-          <Input 
-            type="date"
-            name="endDate" 
-            value={campaign.endDate} 
-            onChange={handleInputChange} 
-          />
-        </div>
-      </div>
-      <div>
-        <label className="text-sm font-medium mb-1 block">Description</label>
-        <Textarea 
-          name="description" 
-          value={campaign.description} 
-          onChange={handleInputChange} 
-          placeholder="Describe the campaign objectives and details"
-          rows={4}
-        />
-      </div>
-      
-      <div className="mt-8">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Profile Settings</h3>
-          {setCreateProfileEnabled && (
-            <div className="flex items-center space-x-2">
-              <input 
-                type="checkbox" 
-                id="createProfile" 
-                checked={createProfileEnabled}
-                onChange={(e) => setCreateProfileEnabled(e.target.checked)}
-                className="rounded border-gray-300"
+    <div className="space-y-6 mt-6">
+      <Card className="bg-white/50 backdrop-blur-md shadow-lg border-blue-50 overflow-hidden">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-semibold mb-4 text-blue-900">Campaign Details</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block text-blue-800">Campaign Name</label>
+              <Input 
+                name="name" 
+                value={campaign.name} 
+                onChange={handleInputChange} 
+                placeholder="Summer Promotion" 
+                className="border-blue-100 focus-visible:ring-blue-400"
               />
-              <label htmlFor="createProfile" className="text-sm">
-                Create new profile with this campaign
-              </label>
             </div>
-          )}
-        </div>
-        
-        {createProfileEnabled && profileSettings && handleProfileInputChange && handleProfileMultiSelectChange ? (
-          <>
-            <Separator className="my-4" />
             
-            <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block text-blue-800">Status</label>
+              <select 
+                name="status"
+                value={campaign.status}
+                onChange={handleInputChange}
+                className="flex h-10 w-full rounded-md border border-blue-100 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
+              >
+                <option value="Planning">Planning</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-1 block">Profile Name</label>
+                <label className="text-sm font-medium mb-1 block text-blue-800">Start Date</label>
                 <Input 
-                  name="name" 
-                  value={safeProfileSettings.name} 
-                  onChange={handleProfileInputChange} 
-                  placeholder="Urban Youth" 
+                  type="date"
+                  name="startDate" 
+                  value={campaign.startDate} 
+                  onChange={handleInputChange} 
+                  className="border-blue-100 focus-visible:ring-blue-400"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Segment</label>
+                <label className="text-sm font-medium mb-1 block text-blue-800">End Date</label>
                 <Input 
-                  name="segment" 
-                  value={safeProfileSettings.segment} 
-                  onChange={handleProfileInputChange} 
-                  placeholder="Youth, Family, Senior, Business" 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Age Range</label>
-                <Input 
-                  name="ageRange" 
-                  value={safeProfileSettings.ageRange} 
-                  onChange={handleProfileInputChange} 
-                  placeholder="18-25, 30-45, etc." 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Interests</label>
-                <Input 
-                  name="interests" 
-                  value={safeProfileSettings.interests} 
-                  onChange={handleProfileInputChange} 
-                  placeholder="Social media, family plans, etc." 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
-                <MultiSelectField
-                  options={TIME_PARTING_OPTIONS}
-                  selectedValues={safeProfileSettings.dayTimeparting} 
-                  onChange={(values) => handleProfileMultiSelectChange('dayTimeparting', values)}
-                  placeholder="Select time periods"
-                  defaultOption="Weekdays"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Geography Region</label>
-                <MultiSelectField
-                  options={FLAT_GEOGRAPHY_OPTIONS}
-                  selectedValues={safeProfileSettings.geographyRegion} 
-                  onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
-                  placeholder="Select regions"
-                  defaultOption="North America"
-                  hierarchical={true}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Device Specifications</label>
-                <MultiSelectField
-                  options={DEVICE_OPTIONS}
-                  selectedValues={safeProfileSettings.deviceSpecs} 
-                  onChange={(values) => handleProfileMultiSelectChange('deviceSpecs', values)}
-                  placeholder="Select devices"
-                  defaultOption="Mobile Phones"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
-                <MultiSelectField
-                  options={DOMAIN_OPTIONS}
-                  selectedValues={safeProfileSettings.domainTargeting} 
-                  onChange={(values) => handleProfileMultiSelectChange('domainTargeting', values)}
-                  placeholder="Select domains"
-                  useCheckboxes={true}
-                  allowCustomOption={true}
-                  defaultOption="google.com"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Profile Description</label>
-                <Textarea 
-                  name="description" 
-                  value={safeProfileSettings.description} 
-                  onChange={handleProfileInputChange} 
-                  placeholder="Describe the profile characteristics"
-                  rows={3}
+                  type="date"
+                  name="endDate" 
+                  value={campaign.endDate} 
+                  onChange={handleInputChange}
+                  className="border-blue-100 focus-visible:ring-blue-400" 
                 />
               </div>
             </div>
-          </>
-        ) : (
-          <div className="mt-4">
-            <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              name="profileId"
-              onChange={handleInputChange}
-              value={campaign.profileId || ""}
-            >
-              <option value="" disabled>Select a profile</option>
-              {profiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>
-                  {profile.name} ({profile.segment})
-                </option>
-              ))}
-            </select>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-blue-800">Description</label>
+              <Textarea 
+                name="description" 
+                value={campaign.description} 
+                onChange={handleInputChange} 
+                placeholder="Describe the campaign objectives and details"
+                rows={4}
+                className="border-blue-100 focus-visible:ring-blue-400"
+              />
+            </div>
           </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
       
-      <Button onClick={handleSubmit} className="w-full mt-6">
+      <Card className="bg-white/50 backdrop-blur-md shadow-lg border-purple-50 overflow-hidden">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">Target Profile</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Age Range</label>
+              <Input 
+                name="ageRange" 
+                value={safeProfileSettings.ageRange} 
+                onChange={handleProfileInputChange} 
+                placeholder="18-25, 30-45, etc." 
+                className="border-purple-100 focus-visible:ring-purple-400"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Interests</label>
+              <Input 
+                name="interests" 
+                value={safeProfileSettings.interests} 
+                onChange={handleProfileInputChange} 
+                placeholder="Social media, family plans, etc." 
+                className="border-purple-100 focus-visible:ring-purple-400"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Day/Time Parting</label>
+              <MultiSelectField
+                options={TIME_PARTING_OPTIONS}
+                selectedValues={safeProfileSettings.dayTimeparting} 
+                onChange={(values) => handleProfileMultiSelectChange('dayTimeparting', values)}
+                placeholder="Select time periods"
+                defaultOption="Weekdays"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Geography Region</label>
+              <MultiSelectField
+                options={FLAT_GEOGRAPHY_OPTIONS}
+                selectedValues={safeProfileSettings.geographyRegion} 
+                onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
+                placeholder="Select regions"
+                defaultOption="North America"
+                hierarchical={true}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Device Specifications</label>
+              <MultiSelectField
+                options={DEVICE_OPTIONS}
+                selectedValues={safeProfileSettings.deviceSpecs} 
+                onChange={(values) => handleProfileMultiSelectChange('deviceSpecs', values)}
+                placeholder="Select devices"
+                defaultOption="Mobile Phones"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Domain Data (Upload Text File)</label>
+              <FileUploader 
+                onFileSelect={handleFileSelect}
+                selectedFile={selectedFile}
+              />
+            </div>
+            
+            {(selectedFile || fileData.length > 0) && (
+              <div>
+                <label className="text-sm font-medium mb-1 block text-purple-800">File Preview</label>
+                <TextFilePreview data={fileData} perPage={10} />
+              </div>
+            )}
+            
+            <div>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Profile Description</label>
+              <Textarea 
+                name="description" 
+                value={safeProfileSettings.description} 
+                onChange={handleProfileInputChange} 
+                placeholder="Describe the profile characteristics"
+                rows={3}
+                className="border-purple-100 focus-visible:ring-purple-400"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Button 
+        onClick={handleSubmit} 
+        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all shadow-md h-12 text-base"
+      >
         {submitButtonText}
       </Button>
     </div>
