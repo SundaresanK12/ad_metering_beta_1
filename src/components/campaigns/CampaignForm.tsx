@@ -126,29 +126,29 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg border border-blue-100 overflow-hidden">
+      <Card className="gradient-card shadow-lg overflow-hidden rounded-xl">
         <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-4 text-blue-900">Campaign Details</h3>
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">Campaign Details</h3>
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1 block text-blue-800">Campaign Name</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Campaign Name</label>
               <Input 
                 name="name" 
                 value={campaign.name} 
                 onChange={handleInputChange} 
                 placeholder="Summer Promotion" 
-                className="border-blue-100 focus-visible:ring-blue-400"
+                className="enhanced-input"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-blue-800">Status</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Status</label>
               <select 
                 name="status"
                 value={campaign.status}
                 onChange={handleInputChange}
-                className="flex h-10 w-full rounded-md border border-blue-100 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
+                className="enhanced-select flex h-10 w-full rounded-lg border border-purple-100 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2"
               >
                 <option value="Planning">Planning</option>
                 <option value="Scheduled">Scheduled</option>
@@ -159,71 +159,71 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-1 block text-blue-800">Start Date</label>
+                <label className="text-sm font-medium mb-1 block text-purple-800">Start Date</label>
                 <Input 
                   type="date"
                   name="startDate" 
                   value={campaign.startDate} 
                   onChange={handleInputChange} 
-                  className="border-blue-100 focus-visible:ring-blue-400"
+                  className="enhanced-input"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block text-blue-800">End Date</label>
+                <label className="text-sm font-medium mb-1 block text-purple-800">End Date</label>
                 <Input 
                   type="date"
                   name="endDate" 
                   value={campaign.endDate} 
                   onChange={handleInputChange}
-                  className="border-blue-100 focus-visible:ring-blue-400" 
+                  className="enhanced-input" 
                 />
               </div>
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-blue-800">Description</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Description</label>
               <Textarea 
                 name="description" 
                 value={campaign.description} 
                 onChange={handleInputChange} 
                 placeholder="Describe the campaign objectives and details"
                 rows={4}
-                className="border-blue-100 focus-visible:ring-blue-400"
+                className="enhanced-input"
               />
             </div>
           </div>
         </CardContent>
       </Card>
       
-      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg border border-indigo-100 overflow-hidden">
+      <Card className="gradient-card shadow-lg overflow-hidden rounded-xl">
         <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-4 text-indigo-900">Target Profile</h3>
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">Target Profile</h3>
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Age Range</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Age Range</label>
               <Input 
                 name="ageRange" 
                 value={safeProfileSettings.ageRange} 
                 onChange={handleProfileInputChange} 
                 placeholder="18-25, 30-45, etc." 
-                className="border-indigo-100 focus-visible:ring-indigo-400"
+                className="enhanced-input"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Interests</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Interests</label>
               <Input 
                 name="interests" 
                 value={safeProfileSettings.interests} 
                 onChange={handleProfileInputChange} 
                 placeholder="Social media, family plans, etc." 
-                className="border-indigo-100 focus-visible:ring-indigo-400"
+                className="enhanced-input"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Day/Time Parting</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Day/Time Parting</label>
               <MultiSelectField
                 options={TIME_PARTING_OPTIONS}
                 selectedValues={safeProfileSettings.dayTimeparting} 
@@ -234,7 +234,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Region</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Region</label>
               <MultiSelectField
                 options={FLAT_REGION_OPTIONS}
                 selectedValues={safeProfileSettings.geographyRegion} 
@@ -246,7 +246,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Device Specifications</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Device Specifications</label>
               <MultiSelectField
                 options={DEVICE_OPTIONS}
                 selectedValues={safeProfileSettings.deviceSpecs} 
@@ -257,7 +257,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Domain Data</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Domain Data</label>
               <FileUploader 
                 onFileSelect={handleFileSelect}
                 selectedFile={selectedFile}
@@ -266,20 +266,20 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             
             {(selectedFile || fileData.length > 0) && (
               <div>
-                <label className="text-sm font-medium mb-1 block text-indigo-800">File Preview</label>
+                <label className="text-sm font-medium mb-1 block text-purple-800">File Preview</label>
                 <TextFilePreview data={fileData} perPage={10} />
               </div>
             )}
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-indigo-800">Profile Description</label>
+              <label className="text-sm font-medium mb-1 block text-purple-800">Profile Description</label>
               <Textarea 
                 name="description" 
                 value={safeProfileSettings.description} 
                 onChange={handleProfileInputChange} 
                 placeholder="Describe the profile characteristics"
                 rows={3}
-                className="border-indigo-100 focus-visible:ring-indigo-400"
+                className="enhanced-input"
               />
             </div>
           </div>
@@ -288,7 +288,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
       
       <Button 
         onClick={handleSubmit} 
-        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md h-12 text-base"
+        className="w-full mt-6 gradient-button shadow-md h-12 text-base font-medium rounded-lg"
       >
         {submitButtonText}
       </Button>

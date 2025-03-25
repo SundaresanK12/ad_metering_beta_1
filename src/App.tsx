@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import BrandsAnalytics from "./pages/BrandsAnalytics";
 import NotFound from "./pages/NotFound";
 import Campaigns from "./pages/Campaigns";
-import Experiments from "./pages/Experiments";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +20,6 @@ const App = () => (
           <Route path="/" element={<Navigate to="/brands-analytics" replace />} />
           <Route path="/brands-analytics" element={<BrandsAnalytics />} />
           <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/experiments" element={<Experiments />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

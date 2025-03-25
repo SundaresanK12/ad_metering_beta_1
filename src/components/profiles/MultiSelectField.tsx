@@ -55,6 +55,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   }, [defaultOption, onChange, values.length]);
 
   const handleSelect = (value: string) => {
+    // Prevent event bubbling
     const selected = values.includes(value)
       ? values.filter((item) => item !== value)
       : [...values, value];
@@ -96,6 +97,11 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
   // Make sure we always have valid options to display
   const safeOptions = Array.isArray(options) ? options : [];
 
+  // For logging
+  useEffect(() => {
+    console.log("MultiSelect - Selected Values:", values);
+  }, [values]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -103,16 +109,16 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-auto min-h-10"
+          className="w-full justify-between h-auto min-h-10 bg-white border border-purple-100 hover:border-purple-300 focus:ring-purple-500 shadow-sm rounded-lg"
         >
           <div className="flex flex-wrap gap-1 py-1">
             {values.length > 0 ? (
               values.map((value) => (
-                <Badge key={value} className="mr-1 mb-1">
+                <Badge key={value} className="mr-1 mb-1 bg-purple-100 text-purple-800 hover:bg-purple-200">
                   {hierarchical ? getDisplayName(value) : value}
                   <button
                     type="button"
-                    className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-ring"
+                    className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-purple-500"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemove(value);
@@ -129,10 +135,10 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
-        <Command>
-          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
-          <CommandList>
+      <PopoverContent className="w-[300px] p-0 rounded-lg border border-purple-100 shadow-lg bg-white">
+        <Command className="rounded-lg">
+          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="border-purple-100" />
+          <CommandList className="max-h-[300px] overflow-auto">
             <CommandEmpty>No options found.</CommandEmpty>
             <CommandGroup className="max-h-60 overflow-auto">
               {useCheckboxes ? (
@@ -141,20 +147,26 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                   {safeOptions.map((option) => (
                     <div 
                       key={option} 
-                      className="flex items-center space-x-2"
+                      className="flex items-center space-x-2 p-2 rounded-md hover:bg-purple-50"
                       style={{ 
-                        paddingLeft: hierarchical ? `${getIndentation(option) * 12}px` : '0'
+                        paddingLeft: hierarchical ? `${getIndentation(option) * 12 + 8}px` : '8px'
                       }}
                     >
                       <Checkbox 
                         id={`option-${option}`}
                         checked={values.includes(option)}
-                        onCheckedChange={() => handleSelect(option)}
+                        onCheckedChange={() => {
+                          handleSelect(option);
+                        }}
+                        className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                       />
                       <label 
                         htmlFor={`option-${option}`}
                         className="text-sm cursor-pointer flex-1"
-                        onClick={() => handleSelect(option)}
+                        onClick={(e) => {
+                          e.preventDefault(); 
+                          handleSelect(option);
+                        }}
                       >
                         {hierarchical ? getDisplayName(option) : option}
                       </label>
@@ -168,11 +180,14 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                     key={option}
                     value={option}
                     onSelect={() => handleSelect(option)}
-                    className={hierarchical ? `pl-${getIndentation(option) * 4 + 2}` : ''}
+                    className={cn(
+                      "rounded-md hover:bg-purple-50",
+                      hierarchical ? `pl-${getIndentation(option) * 4 + 2}` : ''
+                    )}
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
+                        "mr-2 h-4 w-4 text-purple-600",
                         values.includes(option) ? "opacity-100" : "opacity-0"
                       )}
                     />
@@ -184,7 +199,7 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
           </CommandList>
           
           {allowCustomOption && (
-            <div className="border-t p-2 flex gap-2">
+            <div className="border-t border-purple-100 p-2 flex gap-2">
               <Input
                 placeholder="Add custom option..."
                 value={customOption}
@@ -195,13 +210,18 @@ const MultiSelectField: React.FC<MultiSelectProps> = ({
                     addCustomOption();
                   }
                 }}
+                className="border-purple-100 focus-visible:ring-purple-400"
               />
               <Button 
                 type="button" 
                 variant="outline" 
                 size="sm"
-                onClick={addCustomOption}
+                onClick={(e) => {
+                  e.preventDefault();
+                  addCustomOption();
+                }}
                 disabled={!customOption}
+                className="border-purple-100 hover:bg-purple-50 hover:text-purple-700"
               >
                 Add
               </Button>
