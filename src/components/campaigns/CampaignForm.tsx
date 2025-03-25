@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -15,47 +15,54 @@ const TIME_PARTING_OPTIONS = [
   'Weekdays', 'Weekends', 'Business Hours', 'After Hours'
 ];
 
-const GEOGRAPHY_OPTIONS = {
-  'North America': {
-    'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'],
-    'Canada': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Ottawa']
-  },
-  'Europe': {
-    'United Kingdom': ['London', 'Manchester', 'Birmingham', 'Glasgow', 'Liverpool'],
-    'Germany': ['Berlin', 'Munich', 'Hamburg', 'Frankfurt', 'Cologne']
-  },
-  'Asia': {
-    'Japan': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama', 'Nagoya'],
-    'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai']
-  },
-  'Australia': {
-    'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide']
-  }
+// Geographic region options with countries and states
+const REGIONS = {
+  'United States': [
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
+    'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 
+    'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 
+    'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 
+    'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 
+    'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 
+    'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 
+    'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 
+    'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 
+    'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+  ],
+  'United Kingdom': [
+    'England', 'Scotland', 'Wales', 'Northern Ireland',
+    'London', 'Manchester', 'Birmingham', 'Liverpool', 'Edinburgh',
+    'Glasgow', 'Cardiff', 'Belfast', 'Bristol', 'Leeds'
+  ],
+  'India': [
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+    'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
+    'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+    'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+    'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+    'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+    'Delhi', 'Mumbai', 'Kolkata', 'Chennai', 'Bangalore'
+  ]
 };
 
 // Convert hierarchical options to flat array for dropdown
-const flattenGeoOptions = (options) => {
+const flattenRegionOptions = (regions) => {
   const result = [];
   
-  // Add continents
-  Object.keys(options).forEach(continent => {
-    result.push(continent);
+  // Add countries
+  Object.keys(regions).forEach(country => {
+    result.push(country);
     
-    // Add countries
-    Object.keys(options[continent]).forEach(country => {
-      result.push(`${continent} - ${country}`);
-      
-      // Add cities
-      options[continent][country].forEach(city => {
-        result.push(`${continent} - ${country} - ${city}`);
-      });
+    // Add states
+    regions[country].forEach(state => {
+      result.push(`${country} - ${state}`);
     });
   });
   
   return result;
 };
 
-const FLAT_GEOGRAPHY_OPTIONS = flattenGeoOptions(GEOGRAPHY_OPTIONS);
+const FLAT_REGION_OPTIONS = flattenRegionOptions(REGIONS);
 
 const DEVICE_OPTIONS = [
   'Mobile Phones', 'Tablets', 'Desktops', 'Laptops',
@@ -118,8 +125,8 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
   };
 
   return (
-    <div className="space-y-6 mt-6">
-      <Card className="bg-white/50 backdrop-blur-md shadow-lg border-blue-50 overflow-hidden">
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg border border-blue-100 overflow-hidden">
         <CardContent className="p-6">
           <h3 className="text-xl font-semibold mb-4 text-blue-900">Campaign Details</h3>
           
@@ -188,35 +195,35 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
         </CardContent>
       </Card>
       
-      <Card className="bg-white/50 backdrop-blur-md shadow-lg border-purple-50 overflow-hidden">
+      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg border border-indigo-100 overflow-hidden">
         <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-4 text-purple-900">Target Profile</h3>
+          <h3 className="text-xl font-semibold mb-4 text-indigo-900">Target Profile</h3>
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Age Range</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Age Range</label>
               <Input 
                 name="ageRange" 
                 value={safeProfileSettings.ageRange} 
                 onChange={handleProfileInputChange} 
                 placeholder="18-25, 30-45, etc." 
-                className="border-purple-100 focus-visible:ring-purple-400"
+                className="border-indigo-100 focus-visible:ring-indigo-400"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Interests</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Interests</label>
               <Input 
                 name="interests" 
                 value={safeProfileSettings.interests} 
                 onChange={handleProfileInputChange} 
                 placeholder="Social media, family plans, etc." 
-                className="border-purple-100 focus-visible:ring-purple-400"
+                className="border-indigo-100 focus-visible:ring-indigo-400"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Day/Time Parting</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Day/Time Parting</label>
               <MultiSelectField
                 options={TIME_PARTING_OPTIONS}
                 selectedValues={safeProfileSettings.dayTimeparting} 
@@ -227,19 +234,19 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Geography Region</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Region</label>
               <MultiSelectField
-                options={FLAT_GEOGRAPHY_OPTIONS}
+                options={FLAT_REGION_OPTIONS}
                 selectedValues={safeProfileSettings.geographyRegion} 
                 onChange={(values) => handleProfileMultiSelectChange('geographyRegion', values)}
-                placeholder="Select regions"
-                defaultOption="North America"
+                placeholder="Select countries and states"
                 hierarchical={true}
+                useCheckboxes={true}
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Device Specifications</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Device Specifications</label>
               <MultiSelectField
                 options={DEVICE_OPTIONS}
                 selectedValues={safeProfileSettings.deviceSpecs} 
@@ -250,7 +257,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Domain Data (Upload Text File)</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Domain Data</label>
               <FileUploader 
                 onFileSelect={handleFileSelect}
                 selectedFile={selectedFile}
@@ -259,20 +266,20 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
             
             {(selectedFile || fileData.length > 0) && (
               <div>
-                <label className="text-sm font-medium mb-1 block text-purple-800">File Preview</label>
+                <label className="text-sm font-medium mb-1 block text-indigo-800">File Preview</label>
                 <TextFilePreview data={fileData} perPage={10} />
               </div>
             )}
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-purple-800">Profile Description</label>
+              <label className="text-sm font-medium mb-1 block text-indigo-800">Profile Description</label>
               <Textarea 
                 name="description" 
                 value={safeProfileSettings.description} 
                 onChange={handleProfileInputChange} 
                 placeholder="Describe the profile characteristics"
                 rows={3}
-                className="border-purple-100 focus-visible:ring-purple-400"
+                className="border-indigo-100 focus-visible:ring-indigo-400"
               />
             </div>
           </div>
@@ -281,7 +288,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({
       
       <Button 
         onClick={handleSubmit} 
-        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all shadow-md h-12 text-base"
+        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md h-12 text-base"
       >
         {submitButtonText}
       </Button>

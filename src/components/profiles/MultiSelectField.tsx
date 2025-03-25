@@ -32,8 +32,8 @@ interface MultiSelectProps {
 }
 
 const MultiSelectField: React.FC<MultiSelectProps> = ({
-  options = [], // Ensure options is always an array
-  selectedValues = [], // Ensure selectedValues is always an array
+  options = [], 
+  selectedValues = [], 
   onChange,
   placeholder,
   allowCustomOption = false,
