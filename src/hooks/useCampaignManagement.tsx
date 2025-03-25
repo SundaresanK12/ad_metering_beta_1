@@ -99,14 +99,14 @@ export const useCampaignManagement = () => {
     if (createProfileEnabled) {
       try {
         // Simulate profile creation
-        const profileId = Math.max(...profiles.map(p => p.id), 0) + 1;
-        const newProfileWithId = { id: profileId, ...newProfile };
+        const newProfileId = Math.max(...profiles.map(p => p.id), 0) + 1;
+        const newProfileWithId = { id: newProfileId, ...newProfile };
         
         // Update profiles state
         setProfiles([...profiles, newProfileWithId]);
         
-        // Update profileId in campaign
-        profileId = profileId;
+        // Update profileId in campaign with the newly created profile's id
+        profileId = newProfileId;
         
         toast.success('Profile created successfully');
       } catch (error) {
