@@ -10,12 +10,25 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Trash, Download } from 'lucide-react';
+import { saveToTextFile, generateDateBasedFilename } from '@/utils/fileUtils';
+import { toast } from 'sonner';
+
+interface Campaign {
+  id: string;
+  name: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  profile?: any;
+  metrics?: any;
+}
 
 interface CampaignListProps {
-  campaigns: any[];
+  campaigns: Campaign[];
   profiles: any[];
-  openEditSheet: (campaign: any) => void;
+  openEditSheet: (campaign: Campaign) => void;
   handleDeleteCampaign: (id: string) => void; 
 }
 
@@ -25,6 +38,21 @@ const CampaignList: React.FC<CampaignListProps> = ({
   openEditSheet,
   handleDeleteCampaign
 }) => {
+  const handleExportCampaign = (campaign: Campaign) => {
+    const filename = generateDateBasedFilename(campaign.name.replace(/\s+/g, '_').toLowerCase());
+    
+    // Create an export object with relevant info
+    const exportData = {
+      campaign,
+      exportDate: new Date().toISOString(),
+      exportType: 'campaign_export'
+    };
+    
+    // Save the file and show success message
+    saveToTextFile(exportData, filename);
+    toast.success(`Campaign exported to ${filename}`);
+  };
+
   return (
     <Table className="enhanced-table">
       <TableCaption>A list of your marketing campaigns</TableCaption>
@@ -65,8 +93,18 @@ const CampaignList: React.FC<CampaignListProps> = ({
                   <Button 
                     variant="outline" 
                     size="icon" 
+                    onClick={() => handleExportCampaign(campaign)}
+                    className="border-purple-100 hover:bg-purple-50 hover:text-purple-700"
+                    title="Export Campaign"
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
                     onClick={() => openEditSheet(campaign)}
                     className="border-purple-100 hover:bg-purple-50 hover:text-purple-700"
+                    title="Edit Campaign"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -75,6 +113,7 @@ const CampaignList: React.FC<CampaignListProps> = ({
                     size="icon" 
                     onClick={() => handleDeleteCampaign(campaign.id)}
                     className="border-purple-100 hover:bg-red-50 hover:text-red-700"
+                    title="Delete Campaign"
                   >
                     <Trash className="h-4 w-4" />
                   </Button>

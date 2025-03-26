@@ -1,6 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { saveToTextFile, generateDateBasedFilename } from '../utils/fileUtils';
 
 interface Campaign {
   id: string;
@@ -10,6 +10,7 @@ interface Campaign {
   endDate: string;
   description: string;
   profile?: Profile;
+  metrics?: CampaignMetrics;
 }
 
 interface Profile {
@@ -19,6 +20,16 @@ interface Profile {
   dayTimeparting: string[];
   geographyRegion: string[];
   deviceSpecs: string[];
+}
+
+interface CampaignMetrics {
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  spend: number;
+  ctr?: number;
+  cpc?: number;
+  conversionRate?: number;
 }
 
 export const useCampaignManagement = () => {
@@ -48,7 +59,6 @@ export const useCampaignManagement = () => {
     deviceSpecs: []
   });
 
-  // Load campaigns from localStorage
   useEffect(() => {
     const savedCampaigns = localStorage.getItem('campaigns');
     if (savedCampaigns) {
@@ -61,7 +71,6 @@ export const useCampaignManagement = () => {
     }
   }, []);
 
-  // Save campaigns to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('campaigns', JSON.stringify(campaigns));
   }, [campaigns]);
@@ -81,13 +90,36 @@ export const useCampaignManagement = () => {
 
   const handleAddCampaign = () => {
     const id = generateId();
+    
+    const defaultMetrics: CampaignMetrics = {
+      impressions: 0,
+      clicks: 0,
+      conversions: 0,
+      spend: 0,
+      ctr: 0,
+      cpc: 0,
+      conversionRate: 0
+    };
+    
     const newCampaignWithProfile = {
       ...newCampaign,
       id,
-      profile: newProfile
+      profile: newProfile,
+      metrics: defaultMetrics
     };
     
     setCampaigns([...campaigns, newCampaignWithProfile]);
+    
+    const filename = generateDateBasedFilename(newCampaign.name.replace(/\s+/g, '_').toLowerCase());
+    
+    const exportData = {
+      campaign: newCampaignWithProfile,
+      exportDate: new Date().toISOString(),
+      exportType: 'campaign_creation'
+    };
+    
+    saveToTextFile(exportData, filename);
+    toast.success(`Campaign created and saved to ${filename}`);
     
     setNewCampaign({
       name: '',
@@ -109,8 +141,6 @@ export const useCampaignManagement = () => {
     setSelectedFile(null);
     setFileData([]);
     setIsAddOpen(false);
-    
-    toast.success('Campaign created successfully');
   };
 
   const handleEditCampaign = () => {

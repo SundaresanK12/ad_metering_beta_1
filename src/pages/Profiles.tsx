@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -7,485 +6,428 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { 
-  Edit, 
-  Plus, 
-  Search, 
-  Trash, 
-  User
-} from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Check, ChevronsUpDown, Edit, Plus, Trash } from 'lucide-react';
 import MainNavigation from '@/components/MainNavigation';
 import MultiSelectField from '@/components/profiles/MultiSelectField';
 
-// Predefined options for dropdown fields
-const TIME_PARTING_OPTIONS = [
+interface Profile {
+  id: string;
+  name: string;
+  ageRange: string;
+  interests: string;
+  dayTimeparting: string[];
+  geographyRegion: string[];
+  deviceSpecs: string[];
+  description: string;
+}
+
+const dayTimeOptions = [
   'Morning', 'Afternoon', 'Evening', 'Night',
   'Weekdays', 'Weekends', 'Business Hours', 'After Hours'
 ];
 
-const GEOGRAPHY_OPTIONS = [
-  'Urban Areas', 'Suburban Areas', 'Rural Areas',
-  'Major Cities', 'Business Districts', 'Residential Areas',
-  'East Coast', 'West Coast', 'Midwest', 'South',
-  'International'
+const regionOptions = [
+  'United States', 'United Kingdom', 'India',
+  'California', 'New York', 'London', 'Mumbai'
 ];
 
-const DEVICE_OPTIONS = [
+const deviceOptions = [
   'Mobile Phones', 'Tablets', 'Desktops', 'Laptops',
   'iOS Devices', 'Android Devices', 'Smart TVs', 'Gaming Consoles'
 ];
 
-const DOMAIN_OPTIONS = [
-  'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com',
-  'google.com', 'youtube.com', 'tiktok.com', 'pinterest.com',
-  'snapchat.com', 'reddit.com', 'amazon.com', 'netflix.com'
-];
-
-interface Profile {
-  id: number;
-  name: string;
-  segment: string;
-  ageRange: string;
-  interests: string;
-  description: string;
-  dayTimeparting: string[];
-  geographyRegion: string[];
-  deviceSpecs: string[];
-  domainTargeting: string[];
-}
-
-const initialProfiles: Profile[] = [
-  { 
-    id: 1, 
-    name: 'Urban Youth', 
-    segment: 'Youth', 
-    ageRange: '18-25', 
-    interests: 'Social media, gaming, streaming', 
-    description: 'Young urban professionals who are tech-savvy', 
-    dayTimeparting: ['Evenings', 'Weekends'], 
-    geographyRegion: ['Urban areas', 'Major cities'], 
-    deviceSpecs: ['Mobile devices', 'High-end phones'], 
-    domainTargeting: ['facebook.com', 'instagram.com', 'youtube.com']
-  },
-  { 
-    id: 2, 
-    name: 'Family Premium', 
-    segment: 'Family', 
-    ageRange: '30-45', 
-    interests: 'Family plans, data sharing, security', 
-    description: 'Families looking for premium reliable service', 
-    dayTimeparting: ['Mornings', 'Evenings'], 
-    geographyRegion: ['Suburban areas'], 
-    deviceSpecs: ['Various devices', 'Tablets'], 
-    domainTargeting: ['youtube.com', 'google.com', 'amazon.com'] 
-  },
-  { 
-    id: 3, 
-    name: 'Senior Value', 
-    segment: 'Senior', 
-    ageRange: '60+', 
-    interests: 'Reliability, customer service, value', 
-    description: 'Seniors looking for simple plans with good value', 
-    dayTimeparting: ['Morning', 'Afternoon'], 
-    geographyRegion: ['Rural', 'Suburban'], 
-    deviceSpecs: ['Basic smartphones', 'Desktop'], 
-    domainTargeting: ['google.com', 'facebook.com'] 
-  },
-  { 
-    id: 4, 
-    name: 'Business Small', 
-    segment: 'Business', 
-    ageRange: '25-55', 
-    interests: 'Reliability, customer service, data plans', 
-    description: 'Small business owners needing reliable service', 
-    dayTimeparting: ['Business hours'], 
-    geographyRegion: ['Business districts'], 
-    deviceSpecs: ['Business devices', 'Laptops'], 
-    domainTargeting: ['linkedin.com', 'google.com'] 
-  },
-];
-
 const Profiles = () => {
-  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [filterTerm, setFilterTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
-  
-  const [newProfile, setNewProfile] = useState<Omit<Profile, 'id'>>({
+  const [profile, setProfile] = useState<Omit<Profile, 'id'>>({
     name: '',
-    segment: '',
     ageRange: '',
     interests: '',
-    description: '',
     dayTimeparting: [],
     geographyRegion: [],
     deviceSpecs: [],
-    domainTargeting: []
+    description: ''
   });
+  const [editProfile, setEditProfile] = useState<Profile>({
+    id: '',
+    name: '',
+    ageRange: '',
+    interests: '',
+    dayTimeparting: [],
+    geographyRegion: [],
+    deviceSpecs: [],
+    description: ''
+  });
+
+  useEffect(() => {
+    const savedProfiles = localStorage.getItem('profiles');
+    if (savedProfiles) {
+      setProfiles(JSON.parse(savedProfiles));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('profiles', JSON.stringify(profiles));
+  }, [profiles]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredProfiles = profiles.filter(profile =>
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.segment.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterTerm(e.target.value);
+  };
+
+  const filteredProfiles = profiles.filter(profile => {
+    const searchMatch =
+      profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.ageRange.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.interests.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const filterMatch = filterTerm === '' || profile.ageRange === filterTerm;
+
+    return searchMatch && filterMatch;
+  });
+
+  const generateId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
 
   const handleAddProfile = () => {
-    const id = Math.max(...profiles.map(p => p.id), 0) + 1;
-    setProfiles([...profiles, { id, ...newProfile }]);
-    setNewProfile({
+    const id = generateId();
+    const newProfile = { ...profile, id };
+    setProfiles([...profiles, newProfile]);
+    setProfile({
       name: '',
-      segment: '',
       ageRange: '',
       interests: '',
-      description: '',
       dayTimeparting: [],
       geographyRegion: [],
       deviceSpecs: [],
-      domainTargeting: []
+      description: ''
     });
-    setIsAddOpen(false);
-    toast.success('Profile created successfully');
+    setIsOpen(false);
   };
 
-  const handleEditProfile = () => {
-    if (currentProfile) {
-      setProfiles(profiles.map(p => p.id === currentProfile.id ? currentProfile : p));
-      setIsEditOpen(false);
-      toast.success('Profile updated successfully');
+  const handleEdit = (id: string) => {
+    const profileToEdit = profiles.find(profile => profile.id === id);
+    if (profileToEdit) {
+      setEditProfile(profileToEdit);
+      setIsEditOpen(true);
     }
   };
 
-  const handleDeleteProfile = (id: number) => {
-    setProfiles(profiles.filter(p => p.id !== id));
-    toast.success('Profile deleted successfully');
+  const handleUpdateProfile = () => {
+    setProfiles(profiles.map(profile =>
+      profile.id === editProfile.id ? editProfile : profile
+    ));
+    setIsEditOpen(false);
   };
 
-  const openEditSheet = (profile: Profile) => {
-    setCurrentProfile(profile);
-    setIsEditOpen(true);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setNewProfile({ ...newProfile, [name]: value });
-  };
-
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (currentProfile) {
-      setCurrentProfile({ ...currentProfile, [name]: value });
-    }
-  };
-
-  const handleMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs' | 'domainTargeting'>, values: string[]) => {
-    setNewProfile({ ...newProfile, [field]: values });
-  };
-
-  const handleEditMultiSelectChange = (field: keyof Pick<Profile, 'dayTimeparting' | 'geographyRegion' | 'deviceSpecs' | 'domainTargeting'>, values: string[]) => {
-    if (currentProfile) {
-      setCurrentProfile({ ...currentProfile, [field]: values });
-    }
+  const handleDelete = (id: string) => {
+    setProfiles(profiles.filter(profile => profile.id !== id));
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
       <MainNavigation />
-      
-      <div className="flex items-center mb-6">
-        <h1 className="text-3xl font-bold">Profiles</h1>
-      </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2 w-1/3">
-          <Input 
-            placeholder="Search profiles" 
-            value={searchTerm}
-            onChange={handleSearch}
-            className="max-w-xs"
-          />
-          <Button variant="outline" size="icon">
-            <Search className="h-4 w-4" />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-purple-800">Target Audience Profiles</h1>
+          <Button 
+            onClick={() => setIsOpen(true)}
+            className="gradient-button px-4 py-2 rounded-md font-medium flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" /> Create Profile
           </Button>
         </div>
 
-        <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <SheetTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Profile
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Create New Profile</SheetTitle>
-              <SheetDescription>
-                Add details for your new profile
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <Card className="enhanced-card">
+            <CardHeader>
+              <CardTitle className="text-purple-800">Search Profiles</CardTitle>
+              <CardDescription className="text-purple-600">
+                Find profiles by name, age, or interests
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Input 
+                type="search"
+                placeholder="Search profiles..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="enhanced-input"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="enhanced-card">
+            <CardHeader>
+              <CardTitle className="text-purple-800">Filter Profiles</CardTitle>
+              <CardDescription className="text-purple-600">
+                Filter profiles by age range
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <select 
+                value={filterTerm}
+                onChange={handleFilter}
+                className="enhanced-select flex h-10 w-full rounded-md border border-purple-200 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="">All Age Ranges</option>
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45+">45+</option>
+              </select>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProfiles.map(profile => (
+            <Card key={profile.id} className="enhanced-card">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold text-purple-900">{profile.name}</CardTitle>
+                <CardDescription className="text-purple-600">{profile.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-purple-700">
+                  <span className="font-medium">Age Range:</span> {profile.ageRange}
+                </p>
+                <p className="text-purple-700">
+                  <span className="font-medium">Interests:</span> {profile.interests}
+                </p>
+                <Separator className="bg-purple-200" />
+                <div className="flex justify-end gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => handleEdit(profile.id)}
+                    className="border-purple-200 hover:bg-purple-50 hover:text-purple-700"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => handleDelete(profile.id)}
+                    className="border-purple-200 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Add Profile Sheet */}
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetContent className="w-[480px] sm:w-[540px] bg-gradient-to-b from-white to-purple-50 p-0 border-purple-200">
+            <SheetHeader className="p-6 gradient-header sticky top-0 z-10">
+              <SheetTitle className="text-white">Create New Profile</SheetTitle>
+              <SheetDescription className="text-purple-100">
+                Add a new target audience profile for your campaigns
               </SheetDescription>
             </SheetHeader>
-            <div className="space-y-4 mt-6">
-              <div>
-                <label className="text-sm font-medium mb-1 block">Profile Name</label>
-                <Input 
-                  name="name" 
-                  value={newProfile.name} 
-                  onChange={handleInputChange} 
-                  placeholder="Urban Youth" 
-                />
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Profile Name</label>
+                  <Input 
+                    value={profile.name} 
+                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    placeholder="Urban Young Professionals"
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Age Range</label>
+                  <Input 
+                    value={profile.ageRange} 
+                    onChange={(e) => setProfile({ ...profile, ageRange: e.target.value })}
+                    placeholder="18-34, 25-45, etc."
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Day/Time Targeting</label>
+                  <MultiSelectField
+                    options={dayTimeOptions}
+                    selectedValues={profile.dayTimeparting || []}
+                    onChange={(values) => setProfile({ ...profile, dayTimeparting: values })}
+                    placeholder="Select time periods"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Geographic Regions</label>
+                  <MultiSelectField
+                    options={regionOptions}
+                    selectedValues={profile.geographyRegion || []}
+                    onChange={(values) => setProfile({ ...profile, geographyRegion: values })}
+                    placeholder="Select regions"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Device Specifications</label>
+                  <MultiSelectField
+                    options={deviceOptions}
+                    selectedValues={profile.deviceSpecs || []}
+                    onChange={(values) => setProfile({ ...profile, deviceSpecs: values })}
+                    placeholder="Select devices"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Profile Description</label>
+                  <Textarea 
+                    value={profile.description}
+                    onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                    placeholder="Describe the target audience profile"
+                    rows={3}
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsOpen(false)}
+                    className="text-purple-700 border-purple-200 hover:bg-purple-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleAddProfile} 
+                    className="gradient-button"
+                    disabled={!profile.name}
+                  >
+                    Add Profile
+                  </Button>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Segment</label>
-                <Input 
-                  name="segment" 
-                  value={newProfile.segment} 
-                  onChange={handleInputChange} 
-                  placeholder="Youth, Family, Senior, Business" 
-                />
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Edit Profile Sheet */}
+        <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <SheetContent className="w-[480px] sm:w-[540px] bg-gradient-to-b from-white to-purple-50 p-0 border-purple-200">
+            <SheetHeader className="p-6 gradient-header sticky top-0 z-10">
+              <SheetTitle className="text-white">Edit Profile</SheetTitle>
+              <SheetDescription className="text-purple-100">
+                Update the profile details for {editProfile.name}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Profile Name</label>
+                  <Input 
+                    value={editProfile.name} 
+                    onChange={(e) => setEditProfile({ ...editProfile, name: e.target.value })}
+                    placeholder="Urban Young Professionals"
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Age Range</label>
+                  <Input 
+                    value={editProfile.ageRange} 
+                    onChange={(e) => setEditProfile({ ...editProfile, ageRange: e.target.value })}
+                    placeholder="18-34, 25-45, etc."
+                    className="enhanced-input"
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Day/Time Targeting</label>
+                  <MultiSelectField
+                    options={dayTimeOptions}
+                    selectedValues={editProfile.dayTimeparting || []}
+                    onChange={(values) => setEditProfile({ ...editProfile, dayTimeparting: values })}
+                    placeholder="Select time periods"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Geographic Regions</label>
+                  <MultiSelectField
+                    options={regionOptions}
+                    selectedValues={editProfile.geographyRegion || []}
+                    onChange={(values) => setEditProfile({ ...editProfile, geographyRegion: values })}
+                    placeholder="Select regions"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Device Specifications</label>
+                  <MultiSelectField
+                    options={deviceOptions}
+                    selectedValues={editProfile.deviceSpecs || []}
+                    onChange={(values) => setEditProfile({ ...editProfile, deviceSpecs: values })}
+                    placeholder="Select devices"
+                    useCheckboxes={true}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-purple-800 mb-1 block">Profile Description</label>
+                  <Textarea 
+                    value={editProfile.description}
+                    onChange={(e) => setEditProfile({ ...editProfile, description: e.target.value })}
+                    placeholder="Describe the target audience profile"
+                    rows={3}
+                    className="enhanced-input"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditOpen(false)}
+                    className="text-purple-700 border-purple-200 hover:bg-purple-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleUpdateProfile} 
+                    className="gradient-button"
+                  >
+                    Update Profile
+                  </Button>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Age Range</label>
-                <Input 
-                  name="ageRange" 
-                  value={newProfile.ageRange} 
-                  onChange={handleInputChange} 
-                  placeholder="18-25, 30-45, etc." 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Interests</label>
-                <Input 
-                  name="interests" 
-                  value={newProfile.interests} 
-                  onChange={handleInputChange} 
-                  placeholder="Social media, family plans, etc." 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
-                <MultiSelectField
-                  options={TIME_PARTING_OPTIONS}
-                  selectedValues={newProfile.dayTimeparting || []} 
-                  onChange={(values) => handleMultiSelectChange('dayTimeparting', values)}
-                  placeholder="Select time periods"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Geography Region</label>
-                <MultiSelectField
-                  options={GEOGRAPHY_OPTIONS}
-                  selectedValues={newProfile.geographyRegion || []} 
-                  onChange={(values) => handleMultiSelectChange('geographyRegion', values)}
-                  placeholder="Select regions"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Device Specifications</label>
-                <MultiSelectField
-                  options={DEVICE_OPTIONS}
-                  selectedValues={newProfile.deviceSpecs || []} 
-                  onChange={(values) => handleMultiSelectChange('deviceSpecs', values)}
-                  placeholder="Select devices"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
-                <MultiSelectField
-                  options={DOMAIN_OPTIONS}
-                  selectedValues={newProfile.domainTargeting || []} 
-                  onChange={(values) => handleMultiSelectChange('domainTargeting', values)}
-                  placeholder="Select domains"
-                  useCheckboxes={true}
-                  allowCustomOption={true}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Description</label>
-                <Textarea 
-                  name="description" 
-                  value={newProfile.description} 
-                  onChange={handleInputChange} 
-                  placeholder="Describe the profile characteristics"
-                  rows={3}
-                />
-              </div>
-              <Button onClick={handleAddProfile} className="w-full">
-                Create Profile
-              </Button>
             </div>
           </SheetContent>
         </Sheet>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Profiles
-          </CardTitle>
-          <CardDescription>
-            Manage target audience profiles for your marketing campaigns and experiments
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableCaption>A list of your profiles</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Segment</TableHead>
-                <TableHead>Age Range</TableHead>
-                <TableHead>Day/Time Parting</TableHead>
-                <TableHead>Domains</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProfiles.map((profile) => (
-                <TableRow key={profile.id}>
-                  <TableCell className="font-medium">{profile.name}</TableCell>
-                  <TableCell>{profile.segment}</TableCell>
-                  <TableCell>{profile.ageRange}</TableCell>
-                  <TableCell>{Array.isArray(profile.dayTimeparting) ? profile.dayTimeparting.join(', ') : ''}</TableCell>
-                  <TableCell>{Array.isArray(profile.domainTargeting) ? profile.domainTargeting.join(', ') : ''}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="icon" onClick={() => openEditSheet(profile)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => handleDeleteProfile(profile.id)}>
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <SheetContent className="overflow-y-auto">
-          {currentProfile && (
-            <>
-              <SheetHeader>
-                <SheetTitle>Edit Profile</SheetTitle>
-                <SheetDescription>
-                  Update the details for your profile
-                </SheetDescription>
-              </SheetHeader>
-              <div className="space-y-4 mt-6">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Profile Name</label>
-                  <Input 
-                    name="name" 
-                    value={currentProfile.name} 
-                    onChange={handleEditChange} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Segment</label>
-                  <Input 
-                    name="segment" 
-                    value={currentProfile.segment} 
-                    onChange={handleEditChange} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Age Range</label>
-                  <Input 
-                    name="ageRange" 
-                    value={currentProfile.ageRange} 
-                    onChange={handleEditChange} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Interests</label>
-                  <Input 
-                    name="interests" 
-                    value={currentProfile.interests} 
-                    onChange={handleEditChange} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Day/Time Parting</label>
-                  <MultiSelectField
-                    options={TIME_PARTING_OPTIONS}
-                    selectedValues={currentProfile.dayTimeparting || []}
-                    onChange={(values) => handleEditMultiSelectChange('dayTimeparting', values)}
-                    placeholder="Select time periods"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Geography Region</label>
-                  <MultiSelectField
-                    options={GEOGRAPHY_OPTIONS}
-                    selectedValues={currentProfile.geographyRegion || []}
-                    onChange={(values) => handleEditMultiSelectChange('geographyRegion', values)}
-                    placeholder="Select regions"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Device Specifications</label>
-                  <MultiSelectField
-                    options={DEVICE_OPTIONS}
-                    selectedValues={currentProfile.deviceSpecs || []}
-                    onChange={(values) => handleEditMultiSelectChange('deviceSpecs', values)}
-                    placeholder="Select devices"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Domain Targeting</label>
-                  <MultiSelectField
-                    options={DOMAIN_OPTIONS}
-                    selectedValues={currentProfile.domainTargeting || []}
-                    onChange={(values) => handleEditMultiSelectChange('domainTargeting', values)}
-                    placeholder="Select domains"
-                    useCheckboxes={true}
-                    allowCustomOption={true}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Description</label>
-                  <Textarea 
-                    name="description" 
-                    value={currentProfile.description} 
-                    onChange={handleEditChange} 
-                    rows={3}
-                  />
-                </div>
-                <Button onClick={handleEditProfile} className="w-full">
-                  Update Profile
-                </Button>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 };
